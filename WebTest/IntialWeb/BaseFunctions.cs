@@ -31,20 +31,7 @@ namespace ComprehensiveAutomation.UiTest.BaseData
         {
             _page = i_driver;    
         }
-        /*  public async Task InitializeAsync(IPage _page)
-          {
-              var playwright = await Playwright.CreateAsync();
-              var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
-              var context = await browser.NewContextAsync();
-              _page = await context.NewPageAsync();
-          }*/
 
-  /*      public async Task MarkElementAsync(string selector)
-        {
-            string color = "#0000FF";
-            string script = $"document.querySelector({selector}).style.border = '3px solid {color}';";
-            await _page.EvaluateAsync(script);
-        }*/
         public async Task<bool> IsElementFoundAsync(string selector)
         {         
             try
