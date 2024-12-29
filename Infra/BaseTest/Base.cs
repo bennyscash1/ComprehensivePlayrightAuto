@@ -41,7 +41,6 @@ namespace ComprehensiveAutomation.Test.Infra.BaseTest
                 configBuilder = configBuilder.AddJsonFile($"Infra/EnvFiles/jsonData.{Environment.GetEnvironmentVariable("Env")}.json");
             }
             var config = configBuilder.Build();
-
             var API = new API();
             config.GetSection("API").Bind(API);
 
