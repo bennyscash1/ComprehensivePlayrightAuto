@@ -14,21 +14,18 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
     Category(TestLevel.Level_1)]
     public class MobilaBasicTest :MobileDriverFactory
     {
-        string contactPerson = GetTestData(configDataEnum.ContactName);
-        string contactPhone = GetTestData(configDataEnum.ContactNumber);
-
-
         [Test]
-
         public void _MobilaBasicTest()
-        { 
+        {
+            string contactPerson = GetTestData(configDataEnum.ContactName);
+            string contactPhone = GetTestData(configDataEnum.ContactNumber);
 
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(appiumDriver);
 
             #region Insert phone number
    
             mobileLoginFlow
-                .MobileOpenAccountFrame();
+                .MobileGivePermissionAndOpenAccountFrame();
             #endregion
 
             #region init home page popups

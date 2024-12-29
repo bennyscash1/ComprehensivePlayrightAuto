@@ -12,8 +12,8 @@ using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
 using System.Net;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using ComprehensiveAutomation.Infra.HttpService;
 using NUnit.Framework;
+using ComprehensivePlayrightAuto.ApiTest.HttpService;
 
 namespace ComprehensiveAutomation.ApiTest.ApiInit
 {
@@ -21,7 +21,6 @@ namespace ComprehensiveAutomation.ApiTest.ApiInit
     Category(TestLevel.Level_1)]
     public class ApiHttpClientGetTest : BaseTest
     {
-
         [Test]
 
         public async Task _ApiHttpClientGetTest()

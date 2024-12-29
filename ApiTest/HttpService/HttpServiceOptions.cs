@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComprehensiveAutomation.Infra.HttpService
+namespace ComprehensivePlayrightAuto.ApiTest.HttpService
 {
     public class HttpServiceOptions
     {

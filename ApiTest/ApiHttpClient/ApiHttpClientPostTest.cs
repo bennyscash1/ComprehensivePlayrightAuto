@@ -12,7 +12,7 @@ using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
 using System.Net;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using ComprehensiveAutomation.Infra.HttpService;
+using ComprehensivePlayrightAuto.ApiTest.HttpService;
 using NUnit.Framework;
 
 namespace ComprehensiveAutomation.ApiTest.ApiInit

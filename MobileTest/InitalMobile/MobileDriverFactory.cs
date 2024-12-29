@@ -9,11 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ComprehensiveAutomation.MobileTest.Inital
 {
   
-    public class MobileDriverFactory : Base
+    public class MobileDriverFactory : Base, IDisposable
     {
         public AndroidDriver appiumDriver;
 
@@ -28,23 +29,43 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             var uri = new Uri("http://127.0.0.1:4723/wd/hub");
             var driver = new AndroidDriver(uri, appiumOption);
             return driver;
-        }
-        
-        string appPackage = GetTestData(configDataEnum.appPackage);
-        string appActivity = GetTestData(configDataEnum.appActivity);
+        }      
+       
 
         public AppiumOptions InitAppiumOptions()
         {
+            string deviceUuid = GetDeviceUUID();
+            string buyerAppPackage = GetTestData(configDataEnum.appPackage);
+            string buyerAppActivity = GetTestData(configDataEnum.appActivity);
             var appiumOptions = new AppiumOptions();
+            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 100000);
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.PlatformName, "android");
-            appiumOptions.AddAdditionalAppiumOption("deviceName ", "bennys9");
-            appiumOptions.AddAdditionalAppiumOption("appPackage", appPackage);
-            appiumOptions.AddAdditionalAppiumOption("appActivity", appActivity);
-            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, "bfd406d21897");
-            appiumOptions.AddAdditionalAppiumOption("unicodeKeyboard", false);
-            appiumOptions.AddAdditionalAppiumOption("resetKeyboard", false);
+            appiumOptions.AddAdditionalAppiumOption("appPackage", buyerAppPackage);
+            appiumOptions.AddAdditionalAppiumOption("appActivity", buyerAppActivity);
+            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
             return appiumOptions;
         }
+        public string GetDeviceUUID()
+        {
+            // Start a new process for adb command
+            Process process = new Process();
+            process.StartInfo.FileName = "adb";
+            process.StartInfo.Arguments = "get-serialno";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.CreateNoWindow = true;
 
-    }
+            // Start the process and get the output
+            process.Start();
+            string uuid = process.StandardOutput.ReadToEnd().Trim();
+            process.WaitForExit();
+            return uuid;
+        }
+
+        public void Dispose()
+        {
+            appiumDriver.Quit();
+        }
+
+        }
 }

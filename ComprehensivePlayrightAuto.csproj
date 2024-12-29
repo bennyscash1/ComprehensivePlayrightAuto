@@ -45,10 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="jsonData.dev.json">
+    <None Update="Infra\EnvFiles\jsonData.dev.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="jsonData.qa.json">
+    <None Update="Infra\EnvFiles\jsonData.qa.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

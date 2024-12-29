@@ -9,8 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-
-namespace ComprehensiveAutomation.Infra.HttpService
+namespace ComprehensivePlayrightAuto.ApiTest.HttpService
 {
     public class HttpService
     {

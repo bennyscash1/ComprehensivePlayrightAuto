@@ -18,8 +18,13 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             appiumDriver = i_driver;
             mobileLoginPageObject = new MobileLoginPage(appiumDriver);
         }
-        public MobileLoginFlow MobileOpenAccountFrame()
+        public MobileLoginFlow MobileGivePermissionAndOpenAccountFrame()
         {
+            mobileLoginPageObject
+                .ClickOnApprovePopupDialogMessage();
+            mobileLoginPageObject
+                .ClickOnApprovePopupDialogMessage();
+
             mobileLoginPageObject
                 .ClickOnAccountIcon();
             return this;

@@ -38,7 +38,7 @@ namespace ComprehensiveAutomation.Test.Infra.BaseTest
                .AddEnvironmentVariables();
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("Env")))
             {
-                configBuilder = configBuilder.AddJsonFile($"jsonData.{Environment.GetEnvironmentVariable("Env")}.json");
+                configBuilder = configBuilder.AddJsonFile($"Infra/EnvFiles/jsonData.{Environment.GetEnvironmentVariable("Env")}.json");
             }
             var config = configBuilder.Build();
 
