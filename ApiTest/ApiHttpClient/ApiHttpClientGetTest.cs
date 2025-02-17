@@ -1,40 +1,27 @@
-﻿using ComprehensiveAutomation.Test.Infra.BaseTest;
-using CsvHelper.Configuration.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks;
-using Refit;
-using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
-using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
-using System.Net;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using NUnit.Framework;
+﻿using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
 using ComprehensivePlayrightAuto.ApiTest.HttpService;
+using NUnit.Framework;
+using System.Net;
+using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 
-namespace ComprehensiveAutomation.ApiTest.ApiInit
+namespace ComprehensiveAutomation.ApiTest.ApiHttpClient
 {
     [TestFixture, Category(Categories.Api),
     Category(TestLevel.Level_1)]
-    public class ApiHttpClientGetTest : BaseTest
+    public class ApiHttpClientGetTest : ApiInfraTest
     {
         [Test]
-
         public async Task _ApiHttpClientGetTest()
-        {   
-            HttpService m_httpService = new HttpService(
-            new HttpServiceOptions { BaseUrl = GetTestData(configDataEnum.BaseApiUrl) });
+        {
+            SetUpBaseUrl(GetTestData(configDataEnum.BaseApiUrl));
 
-            var m_responceUserProfile = await m_httpService
-                .CallWithoutBody<GetResponceOutputDTO>
-                    (new HttpCallOptionsSimple("api/users?page=2") 
-                    { Method = HttpCallMethod.Get });
+            var responseUserProfile = await HttpService
+            .CallWithoutBody<GetResponceOutputDTO>(
+                new HttpCallOptionsSimple("api/users?page=2")
+                { Method = HttpCallMethod.Get });
 
-            Assert.That(HttpStatusCode.OK== m_responceUserProfile.HttpStatus);
-            var totalResponed = m_responceUserProfile.Result.page;
+            Assert.That(HttpStatusCode.OK == responseUserProfile.HttpStatus);
+            var totalResponded = responseUserProfile.Result.page;
 
         }
     }

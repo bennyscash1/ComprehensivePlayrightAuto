@@ -1,48 +1,35 @@
-﻿using ComprehensiveAutomation.Test.Infra.BaseTest;
-using CsvHelper.Configuration.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks;
-using Refit;
-using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
-using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
-using System.Net;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+﻿using ComprehensiveAutomation.Test.ExternalApiTests.GenerateApiUserTokenTest;
+using ComprehensiveAutomation.Test.Infra.BaseTest;
 using ComprehensivePlayrightAuto.ApiTest.HttpService;
 using NUnit.Framework;
+using System.Net;
+using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 
-namespace ComprehensiveAutomation.ApiTest.ApiInit
+namespace ComprehensiveAutomation.ApiTest.ApiHttpClient
 {
     [TestFixture, Category(Categories.Api),
     Category(TestLevel.Level_1)]
-    public class ApiHttpClientPostTest : BaseTest
+    public class ApiHttpClientPostTest : ApiInfraTest
     {
-
         [Test]
-
         public async Task _ApiHttpClientPostTest()
         {
             string i_token = "example token";
             string email = GetTestData(configDataEnum.ApiEmail);
             string passworr = GetTestData(configDataEnum.ApiPassword);
+            SetUpBaseUrl(GetTestData(configDataEnum.BaseApiUrl));
 
-            var m_serviceOtpValidate = new HttpService(
-                new HttpServiceOptions { BaseUrl = GetTestData(configDataEnum.BaseApiUrl) });
             var loginRequest = new RegisterInputDTO
             {
                 email = email,
                 password = passworr
             };
-            var responsevalidateOtp = await m_serviceOtpValidate
+            var responsevalidateOtp = await HttpService
                 .CallWithBody<RegisterInputDTO, RegisterOutputDTO>
               (loginRequest, new HttpCallOptionsBody("/api/register", i_token));
             Assert.That(HttpStatusCode.OK == responsevalidateOtp.HttpStatus);
             int userId = responsevalidateOtp.Result.id;
-            string token= responsevalidateOtp.Result.token;
+            string token = responsevalidateOtp.Result.token;
 
         }
     }
