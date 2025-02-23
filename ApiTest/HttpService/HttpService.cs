@@ -11,17 +11,17 @@ using System.Web;
 
 namespace ComprehensivePlayrightAuto.ApiTest.HttpService
 {
-    public class HttpService
+    public class HttpService 
     {
         #region Data Members
         private readonly HttpClient m_HttpClient;
-
+        public HttpClient HttpClient => m_HttpClient;
         private readonly HttpServiceOptions m_Options;
         #endregion
 
         #region Constructor
         public HttpService(HttpServiceOptions options)
-            : this(options, TimeSpan.FromSeconds(15))
+            : this(options, TimeSpan.FromSeconds(25))
         {
         }
 
@@ -73,20 +73,22 @@ namespace ComprehensivePlayrightAuto.ApiTest.HttpService
         {
             var response = await m_HttpClient.SendAsync(request);
             var data = await response?.Content.ReadAsStringAsync();
-            Console.WriteLine($"Login call was successful, returned data: {data}");
+
+            TResult dataObj = default; // Initialize with a default value
 
             try
             {
-                var dataObj = JsonConvert.DeserializeObject<TResult>(data);
-
-                return new HttpServiceResult<TResult>(response.StatusCode, dataObj);
+                dataObj = JsonConvert.DeserializeObject<TResult>(data);
             }
-            catch (Exception ex)
+            catch (JsonException ex)
             {
-
-                throw;
+                // Handle the exception, log it, or take appropriate action
+                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
             }
+
+            return new HttpServiceResult<TResult>(response.StatusCode, dataObj, data);
         }
+
 
         public async Task<HttpServiceResult<TResult>> CallWithoutBody<TResult>(HttpCallOptionsSimple options)
         {
@@ -119,18 +121,27 @@ namespace ComprehensivePlayrightAuto.ApiTest.HttpService
             return await HandleCall<TResult>(request);
         }
 
-        public async Task<HttpServiceResult<TResult>> CallWithBody<TBody, TResult>(TBody body, HttpCallOptionsBody options)
+        public async Task<HttpServiceResult<TResult>> CallWithBody<TBody, TResult>(
+            TBody body,
+            HttpCallOptionsBody options,
+            HttpCallMethod method = HttpCallMethod.Post)
         {
-            var method = options.Method == HttpMethodBody.Put
+            // Use the provided method directly
+            HttpMethod httpMethod = method == HttpCallMethod.Put
                 ? HttpMethod.Put
                 : HttpMethod.Post;
 
-            using var request = CreateRequest(options, method);
+            using var request = CreateRequest(options, httpMethod);
 
             string json = JsonConvert.SerializeObject(body);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             return await HandleCall<TResult>(request);
+        }
+
+        public void Dispose()
+        {
+            m_HttpClient.Dispose();
         }
         #endregion
     }

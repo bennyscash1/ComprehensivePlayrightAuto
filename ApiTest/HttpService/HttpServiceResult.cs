@@ -9,15 +9,20 @@ namespace ComprehensivePlayrightAuto.ApiTest.HttpService
 {
     public class HttpServiceResult<T>
     {
-        public HttpServiceResult(HttpStatusCode httpStatus, T result)
+        public HttpServiceResult(HttpStatusCode httpStatus, T result, string? body = null)
         {
             HttpStatus = httpStatus;
 
             Result = result;
+
+            BodyString = body ?? "";
+
         }
 
         public HttpStatusCode HttpStatus { get; private set; }
 
         public T Result { get; private set; }
+        public string BodyString { get; set; }
+
     }
 }
