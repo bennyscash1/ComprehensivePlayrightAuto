@@ -12,8 +12,8 @@ allure serve allure-results
 Mobile:
 Open any app in your mobile once it with adb and run>:
 adb shell dumpsys window | find "mCurrentFocus"
-s
-Install uiautomator2
+
+Install uiautomator2 (first time install or in case you get error from appium server)
 adb uninstall io.appium.uiautomator2.server
 adb uninstall io.appium.uiautomator2.server.test
 
