@@ -139,10 +139,39 @@ namespace ComprehensivePlayrightAuto.ApiTest.HttpService
             return await HandleCall<TResult>(request);
         }
 
-        public void Dispose()
+   
+        #endregion
+        #region Form request
+        public async Task<HttpServiceResult<TResult>> CallWithFormData<TBody, TResult>(TBody body, HttpCallOptionsBody options)
         {
-            m_HttpClient.Dispose();
+            var method = options.Method == HttpMethodBody.Put
+               ? HttpMethod.Put
+               : HttpMethod.Post;
+
+            using var request = CreateRequest(options, method);
+
+            var formData = new MultipartFormDataContent();
+
+            foreach (var prop in typeof(TBody).GetProperties())
+            {
+                var value = prop.GetValue(body);
+                if (value != null)
+                    formData.Add(new StringContent(value.ToString()), prop.Name);
+            }
+
+            request.Content = formData;
+
+            // Correct headers explicitly
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Connection", "keep-alive");
+            request.Headers.Add("User-Agent", "PostmanRuntime/7.43.2");
+
+            /*  var response = await m_HttpClient.SendAsync(request);
+              var data = await response.Content.ReadAsStringAsync();*/
+
+            return await HandleCall<TResult>(request);
         }
         #endregion
+ 
     }
 }

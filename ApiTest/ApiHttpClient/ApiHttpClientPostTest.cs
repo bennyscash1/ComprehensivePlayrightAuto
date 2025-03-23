@@ -27,7 +27,7 @@ namespace ComprehensiveAutomation.ApiTest.ApiHttpClient
             var responsevalidateOtp = await HttpService
                 .CallWithBody<RegisterInputDTO, RegisterOutputDTO>
               (loginRequest, new HttpCallOptionsBody("/api/register", i_token));
-            Assert.That(HttpStatusCode.OK == responsevalidateOtp.HttpStatus);
+            Assert.That(HttpStatusCode.OK == responsevalidateOtp.HttpStatus, responsevalidateOtp.BodyString);
             int userId = responsevalidateOtp.Result.id;
             string token = responsevalidateOtp.Result.token;
 
