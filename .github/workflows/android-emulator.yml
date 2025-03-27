@@ -54,7 +54,7 @@ jobs:
         export PATH=$PATH:$ANDROID_HOME/platform-tools
         boot_status=""
         retry=0
-        while [ "$boot_status" != "1" ] && [ $retry -lt 30 ]; do
+        while [ "$boot_status" != "1" ] && [ $retry -lt 80 ]; do
           echo "Checking if emulator booted... attempt $retry"
           boot_status=$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
           sleep 5
