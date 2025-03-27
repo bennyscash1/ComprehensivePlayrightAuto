@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # עובד הרבה יותר טוב מאשר ubuntu
     timeout-minutes: 35
 
     steps:
@@ -24,54 +24,27 @@ jobs:
 
     - name: Install Appium and UIAutomator2 driver
       run: |
-        npm install -g appium
+        npm install -g appium@2.4.1
         appium driver install uiautomator2
         appium -v
 
     - name: Start Appium server
       run: |
-        nohup appium --base-path /wd/hub --log-level info > appium.log 2>&1 &
+        nohup appium --base-path /wd/hub --log-level debug > appium.log 2>&1 &
         sleep 10
-        
-    - name: Check Appium Server is up
-      run: |
-        curl http://127.0.0.1:4723/wd/hub/status
 
-    - name: Start Android emulator
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 29
-        target: google_apis
-        arch: x86_64
-        profile: Nexus 5
-        avd-name: test
-        emulator-options: -no-window -no-audio -gpu swiftshader_indirect
-        script: echo "📱 Emulator is running"
-        
-    - name: List connected devices
+    - name: Set up Android emulator
       run: |
-        adb devices
-
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;google_apis;x86"
+        echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --force
+        $ANDROID_HOME/emulator/emulator -list-avds
+        nohup $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect > emulator.log 2>&1 &
+        sleep 30
+        $ANDROID_HOME/platform-tools/adb wait-for-device
+        $ANDROID_HOME/platform-tools/adb shell getprop sys.boot_completed
 
     - name: Restore dependencies
       run: dotnet restore
-      
-    - name: Wait for emulator to boot
-      run: |
-        export PATH=$PATH:$ANDROID_HOME/platform-tools
-        boot_status=""
-        retry=0
-        while [ "$boot_status" != "1" ] && [ $retry -lt 80 ]; do
-          echo "Checking if emulator booted... attempt $retry"
-          boot_status=$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
-          sleep 5
-          retry=$((retry+1))
-        done
-        if [ "$boot_status" != "1" ]; then
-          echo "❌ Emulator did not boot in time"
-          exit 1
-        fi
-        echo "✅ Emulator booted successfully"
 
     - name: Build
       run: dotnet build --no-restore
