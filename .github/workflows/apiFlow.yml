@@ -1,0 +1,27 @@
+name: API Tests CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'  # שנה בהתאם לגרסת .NET שלך
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run API tests
+      run: dotnet test --filter "TestCategory=ApiCategory"
