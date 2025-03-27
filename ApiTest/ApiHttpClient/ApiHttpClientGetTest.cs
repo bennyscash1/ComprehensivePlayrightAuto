@@ -6,7 +6,7 @@ using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 
 namespace ComprehensiveAutomation.ApiTest.ApiHttpClient
 {
-    [TestFixture, Category(Categories.Api),
+    [TestFixture, Category(Categories.ApiCategory),
     Category(TestLevel.Level_1)]
     public class ApiHttpClientGetTest : ApiInfraTest
     {
