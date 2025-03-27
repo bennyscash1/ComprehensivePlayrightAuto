@@ -54,3 +54,9 @@ jobs:
 
     - name: Run MobileAndroid tests
       run: dotnet test --filter "TestCategory=MobileAndroid"
+
+    - name: Print Appium logs
+      if: always()
+      run: |
+        echo "========= Appium Logs ========="
+        cat appium.log || echo "No log file found"
