@@ -40,11 +40,18 @@ jobs:
     - name: Start Android emulator
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 30
-        target: default
+        api-level: 29
+        target: google_apis
         arch: x86_64
-        profile: pixel
+        profile: Nexus 5
+        avd-name: test
+        emulator-options: -no-window -no-audio -gpu swiftshader_indirect
         script: echo "📱 Emulator is running"
+        
+    - name: List connected devices
+      run: |
+        adb devices
+
 
     - name: Restore dependencies
       run: dotnet restore
