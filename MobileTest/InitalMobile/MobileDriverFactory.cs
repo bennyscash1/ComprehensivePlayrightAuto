@@ -37,12 +37,20 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             string deviceUuid = GetDeviceUUID();
             string buyerAppPackage = GetTestData(configDataEnum.appPackage);
             string buyerAppActivity = GetTestData(configDataEnum.appActivity);
+
             var appiumOptions = new AppiumOptions();
+            appiumOptions.PlatformName = "Android";
+            appiumOptions.DeviceName = deviceUuid;
+            appiumOptions.AutomationName = "UiAutomator2";
+
+
+            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
+
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 100000);
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.PlatformName, "android");
+
             appiumOptions.AddAdditionalAppiumOption("appPackage", buyerAppPackage);
             appiumOptions.AddAdditionalAppiumOption("appActivity", buyerAppActivity);
-            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
             return appiumOptions;
         }
         public string GetDeviceUUID()
