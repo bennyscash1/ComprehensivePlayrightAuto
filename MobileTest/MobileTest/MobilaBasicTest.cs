@@ -10,7 +10,8 @@ using NUnit.Framework;
 
 namespace ComprehensiveAutomation.MobileTest.MobileTest
 {
-    [TestFixture, Category(Categories.MobileAndroid),
+    [TestFixture, Category(
+        Categories.MobileAndroid),
     Category(TestLevel.Level_1)]
     public class MobilaBasicTest :MobileDriverFactory
     {
@@ -22,7 +23,7 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
 
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(appiumDriver);
 
-            #region Insert phone number
+            #region Give permission for mobile
    
             mobileLoginFlow
                 .MobileGivePermissionAndOpenAccountFrame();
