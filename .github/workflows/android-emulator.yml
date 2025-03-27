@@ -48,6 +48,23 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
+      
+    - name: Wait for emulator to boot
+      run: |
+        export PATH=$PATH:$ANDROID_HOME/platform-tools
+        boot_status=""
+        retry=0
+        while [ "$boot_status" != "1" ] && [ $retry -lt 30 ]; do
+          echo "Checking if emulator booted... attempt $retry"
+          boot_status=$(adb -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+          sleep 5
+          retry=$((retry+1))
+        done
+        if [ "$boot_status" != "1" ]; then
+          echo "❌ Emulator did not boot in time"
+          exit 1
+        fi
+        echo "✅ Emulator booted successfully"
 
     - name: Build
       run: dotnet build --no-restore
