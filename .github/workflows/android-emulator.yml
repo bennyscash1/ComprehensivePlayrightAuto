@@ -30,7 +30,7 @@ jobs:
 
     - name: Start Appium server
       run: |
-        nohup appium --log-level info > appium.log 2>&1 &
+        nohup appium --base-path /wd/hub --log-level info > appium.log 2>&1 &
         sleep 10
         
     - name: Check Appium Server is up
