@@ -77,4 +77,8 @@
     <None Remove="C:\Users\benis\.nuget\packages\autoitx.dotnet\3.3.14.5\build\AutoItX3.dll" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infra\Docker\emulator-gui\" />
+  </ItemGroup>
+
 </Project>

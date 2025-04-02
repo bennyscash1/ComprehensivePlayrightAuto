@@ -16,8 +16,8 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
     {
         public AndroidDriver appiumDriver;
         public AndroidDriver appiumChromeDriver;
-        public TimeSpan timeOutInSeconds = TimeSpan.FromSeconds(4);
-        int maxAttamp = 3;
+        public TimeSpan timeOutInSeconds = TimeSpan.FromSeconds(6);
+        int maxAttamp = 6;
 
 
         public MobileBaseFunction(AndroidDriver driver)
@@ -92,7 +92,6 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
                     elementClick = true;
                     break;
                 }
-
                 attempt++;
             }
             var elementDetails = $"Element {el} sendkeys faild within {timeOutInSeconds} seconds.";

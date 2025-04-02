@@ -18,22 +18,23 @@ namespace ComprehensiveAutomation.MobileTest.Inital
     public class MobileDriverFactory : Base, IDisposable
     {
         public AndroidDriver appiumDriver;
-        public static bool runOnRemote = true;
+        public static bool runOnRealDevice = true;
+        public static bool toInstallApp = false;
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
         public MobileDriverFactory()
         {
-            if (!runOnRemote)
+            if (runOnRealDevice)
             {
-                appiumDriver = InitAppiumDriver();
+                appiumDriver = InitAppiumDriver(toInstallApp);
             }
             else
             {
-                InitRemoteAppiumDriver();
+                appiumDriver = InitRemoteAppiumDriver(toInstallApp);
             }
         }
 
-        public AndroidDriver InitAppiumDriver()
+        public AndroidDriver InitAppiumDriver(bool toInstallApp)
         {
             var appiumOption = InitAppiumOptions();
             var uri = new Uri("http://127.0.0.1:4723/wd/hub");
@@ -41,34 +42,16 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             return driver;
         }
 
-        private AppiumDriver InitRemoteAppiumDriver()
+        private AndroidDriver InitRemoteAppiumDriver(bool toInstallApp)
         {
             var options = InitApppiumRemoteOptions();
-          //  string apiToken = "99fxv9wdn0zl1s3oa25pmd9nj9qcr0ik92p1ynrg14dg02tjv9e7a2r9qaghkz185ps1152nrqjc5pu5qu1rw7shiqgks3agdrczzjm8fniyr6bf9z96pfy7y2d5805bfas8ndia9mmyt3m1jv4bg4ptk64j53nxhpj1ek86l144qrj7qcsfvwy53qjya56l54vwje4sknrem0f6z0yhx8d1uvmlfi1g56lz6psrpk61e8w44azki0eb9cdovmvb";
-            var remoteUrl = new Uri($"https://api.appetize.io/wd/hub");
-            return new AndroidDriver(remoteUrl, options);
+            var remoteUrl = new Uri($"http://localhost:4723/wd/hub");
+            var driver = new AndroidDriver(remoteUrl, options);
+
+            return driver;
         }
 
-        /*    public AppiumOptions InitAppiumOptions()
-            {
-                string deviceUuid = GetDeviceUUID();
-                string buyerAppPackage = GetTestData(configDataEnum.appPackage);
-                string buyerAppActivity = GetTestData(configDataEnum.appActivity);
-
-                var appiumOptions = new AppiumOptions();
-                appiumOptions.PlatformName = "Android";
-                appiumOptions.DeviceName = deviceUuid;
-                appiumOptions.AutomationName = "UiAutomator2";
-
-                appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
-
-                appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 100000);
-                appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.PlatformName, "android");
-
-                appiumOptions.AddAdditionalAppiumOption("appPackage", buyerAppPackage);
-                appiumOptions.AddAdditionalAppiumOption("appActivity", buyerAppActivity);
-                return appiumOptions;
-            }*/
+ 
         public AppiumOptions InitAppiumOptions()
         {
             string deviceUuid = GetDeviceUUID();
@@ -78,12 +61,19 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             appiumOptions.DeviceName = deviceUuid;
             appiumOptions.AutomationName = "UiAutomator2";
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
-            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 100000);
+            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 150000);
 
             appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.calculator");
             appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.calculator2.Calculator");
-            // הסרת AppPackage ו-AppActivity כי האפליקציה תותקן עכשיו אוטומטית מהקישור.
-            //appiumOptions.App = appUrl;
+
+            //Install from download url - or reset app data
+            if (toInstallApp)
+            {
+                appiumOptions.App = appUrl;
+            }
+            //
+            //appiumOptions.AddAdditionalAppiumOption("noReset", false);
+
 
             return appiumOptions;
         }
@@ -91,17 +81,17 @@ namespace ComprehensiveAutomation.MobileTest.Inital
 
         public AppiumOptions InitApppiumRemoteOptions()
         {
+            string deviceUuid = GetDeviceUUID();
             var appiumOptions = new AppiumOptions();
-            appiumOptions.AddAdditionalAppiumOption("platformName", "Android");
-            appiumOptions.AddAdditionalAppiumOption("capabilityName", "Samsung Galaxy S23"); // שם המכשיר שיצרת
-            appiumOptions.AddAdditionalAppiumOption("capabilityName", "UiAutomator2");
-            // appiumOptions.DeviceName = "721bdcf2-2a36-482b-b3ee-96eb28d1a87e";
+            appiumOptions.PlatformName = "Android";
+            appiumOptions.DeviceName = deviceUuid;
+            appiumOptions.AutomationName = "UiAutomator2";
 
-           // appiumOptions.App = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
-           // appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.calculator");
-          //  appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.calculator2.Calculator");
-            appiumOptions.App = "b_ch3r4a2yddfea7tyotowanm5eq";
-            appiumOptions.AddAdditionalAppiumOption("appetizeToken", "tok_lbe6tj6ocflf65ljhlp4pzjbwy");
+          //   appiumOptions.App = appUrl;
+            appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.calculator");
+            appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.calculator2.Calculator");
+            //appiumOptions.AddAdditionalAppiumOption("noReset", false);
+
             // הוספת האפליקציה מקישור ישיר
             return appiumOptions;
         }

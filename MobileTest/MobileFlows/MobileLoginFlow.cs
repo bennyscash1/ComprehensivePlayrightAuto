@@ -18,7 +18,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             appiumDriver = i_driver;
             mobileLoginPageObject = new MobileLoginPage(appiumDriver);
         }
-        public MobileLoginFlow MobileGivePermissionAndOpenAccountFrame()
+/*        public MobileLoginFlow MobileGivePermissionAndOpenAccountFrame()
         {
             mobileLoginPageObject
                 .ClickOnApprovePopupDialogMessage();
@@ -28,12 +28,12 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             mobileLoginPageObject
                 .ClickOnAccountIcon();
             return this;
-        }
-        public bool isCloseIconDisplay()
+        }*/
+        public MobileLoginFlow ClickOnCalFlwo()
         {
             mobileLoginPageObject             
-                .isCloseIconDisplay();
-            return true;    
+                .ClickOnCalculator();
+            return this;    
         }
 
     }

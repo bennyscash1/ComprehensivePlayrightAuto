@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  emulator:
+    build:
+      context: ./emulator-gui
+      dockerfile: Dockerfile
+    container_name: emulator
+    privileged: true
+    ports:
+      - "5555:5555"   # ADB
+      - "5901:5901"   # VNC
+    networks:
+      - appium-net
+    volumes:
+      - adb-data:/root/.android
+    healthcheck:
+      test: ["CMD-SHELL", "adb shell getprop sys.boot_completed | grep -q 1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+  appium:
+    build:
+      context: ./appium
+      dockerfile: Dockerfile
+    container_name: appium-server
+    depends_on:
+      emulator:
+        condition: service_healthy
+    ports:
+      - "4723:4723"
+    networks:
+      - appium-net
+    volumes:
+      - adb-data:/root/.android
+    entrypoint: ["/bin/bash", "-c", "adb connect emulator:5555 && adb devices && appium --base-path /wd/hub --port 4723 --allow-cors"]
+
+networks:
+  appium-net:
+    driver: bridge
+
+volumes:
+  adb-data:

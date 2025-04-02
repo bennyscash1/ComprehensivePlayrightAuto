@@ -13,7 +13,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         public AndroidDriver appiumDriver;
         public MobileBaseFlow(AndroidDriver i_driver)
         {
-            this.appiumDriver = i_driver;
+            appiumDriver = i_driver;
         }
     }
 }

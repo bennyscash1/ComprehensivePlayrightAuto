@@ -17,25 +17,37 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject
         private By m_closeIconBy = By.Id("com.google.android.contacts:id/og_header_close_button");
         private By m_clickApprovePopupPermissionContacs = By.XPath("//android.widget.Button[@resource-id='com.android.permissioncontroller:id/permission_allow_button']");
 
+        //calculator
+        
+
         public MobileLoginPage(AndroidDriver i_driver) : base(i_driver)
         {
             appiumDriver = i_driver;
         }
-        public MobileBasePages ClickOnApprovePopupDialogMessage()
+
+        /*       public MobileBasePages ClickOnApprovePopupDialogMessage()
+               {
+                   MobileClickElement(m_clickApprovePopupPermissionContacs);
+                   return this;
+               }
+               public MobileLoginPage ClickOnAccountIcon()
+               {
+                   MobileClickElement(m_accountIconBy);
+                   return this;
+               }
+
+               public bool isCloseIconDisplay()
+               {
+                   WaitForElement(m_closeIconBy);
+                   return true;
+               }*/
+        private By m_iconCalcualtor = By.XPath("//android.widget.ImageButton[@content-desc=\"point\"]");
+        private By m_number = By.XPath("//android.widget.ImageButton[@content-desc=\"5\"]");
+
+        public MobileLoginPage ClickOnCalculator()
         {
-            MobileClickElement(m_clickApprovePopupPermissionContacs);
+            MobileClickElement(m_number);
             return this;
-        }
-        public MobileLoginPage ClickOnAccountIcon()
-        {
-            MobileClickElement(m_accountIconBy);
-            return this;
-        }
-    
-        public bool isCloseIconDisplay()
-        {
-            WaitForElement(m_closeIconBy);
-            return true;
         }
     }
 }

@@ -26,15 +26,10 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             #region Give permission for mobile
    
             mobileLoginFlow
-                .MobileGivePermissionAndOpenAccountFrame();
+                .ClickOnCalFlwo();
             #endregion
 
-            #region init home page popups
-            bool isCloseIconDisplay=
-                mobileLoginFlow
-                .isCloseIconDisplay();
-            Assert.That(isCloseIconDisplay);
-            #endregion
+
         }
     }
 }
