@@ -44,8 +44,9 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject
         private By m_iconCalcualtor = By.XPath("//android.widget.ImageButton[@content-desc=\"point\"]");
         private By m_number = By.XPath("//android.widget.ImageButton[@content-desc=\"5\"]");
 
-        public MobileLoginPage ClickOnCalculator()
+        public MobileLoginPage ClickOnCalculator(string calculatorNum)
         {
+             By m_number = By.XPath($"//android.widget.ImageButton[@content-desc=\"{calculatorNum}\"]");
             MobileClickElement(m_number);
             return this;
         }

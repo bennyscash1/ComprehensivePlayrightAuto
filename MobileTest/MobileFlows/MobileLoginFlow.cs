@@ -29,10 +29,10 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                 .ClickOnAccountIcon();
             return this;
         }*/
-        public MobileLoginFlow ClickOnCalFlwo()
+        public MobileLoginFlow ClickOnCalFlwo(string calNum)
         {
             mobileLoginPageObject             
-                .ClickOnCalculator();
+                .ClickOnCalculator(calNum);
             return this;    
         }
 

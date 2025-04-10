@@ -34,12 +34,28 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             }
         }
 
-        public AndroidDriver InitAppiumDriver(bool toInstallApp)
+        public AndroidDriver InitAppiumDriver(bool toInstallApp, bool retry = true)
         {
-            var appiumOption = InitAppiumOptions();
-            var uri = new Uri("http://127.0.0.1:4723/wd/hub");
-            var driver = new AndroidDriver(uri, appiumOption);
-            return driver;
+            try
+            {
+                var appiumOptions = InitAppiumOptions();
+                var uri = new Uri("http://127.0.0.1:4723/wd/hub");
+                var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(3));
+                return driver;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Appium driver initialization failed: {ex.Message}");
+
+                if (retry)
+                {
+                    UninstallUiAutomator2Packages();
+                    Console.WriteLine("Retrying Appium driver initialization...");
+                    return InitAppiumDriver(toInstallApp, retry: false);
+                }
+
+                throw new Exception("Failed to initialize Appium driver after retrying.", ex);
+            }
         }
 
         private AndroidDriver InitRemoteAppiumDriver(bool toInstallApp)
@@ -50,8 +66,6 @@ namespace ComprehensiveAutomation.MobileTest.Inital
 
             return driver;
         }
-
- 
         public AppiumOptions InitAppiumOptions()
         {
             string deviceUuid = GetDeviceUUID();
@@ -111,7 +125,36 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             process.WaitForExit();
             return uuid;
         }
-
+        private void UninstallUiAutomator2Packages()
+        {
+            Console.WriteLine("Uninstalling UiAutomator2 server packages...");
+            RunAdbCommand("uninstall io.appium.uiautomator2.server");
+            RunAdbCommand("uninstall io.appium.uiautomator2.server.test");
+        }
+        private void RunAdbCommand(string args)
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "adb",
+                        Arguments = args,
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                process.WaitForExit();
+                Console.WriteLine($"ADB Output: {process.StandardOutput.ReadToEnd()}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error running adb command '{args}': {e.Message}");
+            }
+        }
         public void Dispose()
         {
             appiumDriver.Quit();

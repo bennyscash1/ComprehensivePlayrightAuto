@@ -24,9 +24,9 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(appiumDriver);
 
             #region Give permission for mobile
-   
+            string calculatorNum = "8";
             mobileLoginFlow
-                .ClickOnCalFlwo();
+                .ClickOnCalFlwo(calculatorNum);
             #endregion
 
 

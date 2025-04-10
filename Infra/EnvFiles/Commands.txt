@@ -13,6 +13,8 @@ cd C:\Bennys\Safecash\Repro\Safecash.Tests\SafeCash.Test.Api\bin\Debug\net6.0
 allure serve allure-results 
 
 Run test using PWS command>
+dotnet test ./ComprehensivePlayrightAuto.csproj --filter "Category=MobileAndroid"
+with runsettings file>>
 dotnet test ./SafeCash.Test.Api/SafeCash.Test.csproj --filter "Category={your categoty}" --settings ./SafeCash.Test.Api/EnvFiles/dev.runsettings
 cube ctl (restrat the jobs)
 kubectl --context SafeCash-Dev-AKS01 -n "safecash-dev" rollout restart deployment "safecash-dev-jobs-deployment"
