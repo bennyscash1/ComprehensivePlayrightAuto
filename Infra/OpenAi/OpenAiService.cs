@@ -11,18 +11,40 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             MobileRequest,
             ImagesCompare
         }
-
         string mobilePrePrompt = "You are an automation expert.\n" +
-                "I will give you a mobile XML element dump.\n" +
-                "Return only the XPath locator for the button matching the given target.\n\n" +
-                "Rules:\n" +
-                "- If exactly one match is found: return the XPath only (no explanation).\n" +
-                "- If multiple matches are found: return the number of matches.\n" +
-                "- If no match is found, but the target is a known alias (e.g., 'x' or '*' for 'multiply'), use the real label and return the matching XPath.\n" +
-                "- If nothing matches at all: return 0.\n\n" +
-                "Example XML:\n<android.widget.ImageButton content-desc=\"5\" />\n" +
-                "Target: 5\n" +
-                "Expected: //android.widget.ImageButton[@content-desc=\"5\"]\n";
+            "Given a mobile XML element dump, return only the XPath of the button or element best matching the target.\n\n" +
+            "Rules:\n" +
+            "- Match by content-desc, text, or resource-id.\n" +
+            "- One match → return XPath only. Multiple → return count. No match → return 0.\n" +
+            "- Allow partial matches (substring, typo, etc.).\n" +
+            "- Recognize semantic terms (e.g., '3 dots', 'plus icon', 'person icon'):\n" +
+            "   • 'plus icon' → content-desc with 'Add'/'Create' or resource-id with 'fab'\n" +
+            "   • 'search field' → EditText or 'Search'\n" +
+            "   • 'person icon' → profile/avatar/user\n" +
+            "   • 'menu button' or '3 dots' → 'More options' or 'Customize and control'\n" +
+            "- Layouts (FrameLayout, LinearLayout) are valid if clickable and labeled.\n\n" +
+            "Examples:\n" +
+            "<android.widget.ImageButton content-desc=\"5\" />\n" +
+            "Target: 5\n" +
+            "Expected: //android.widget.ImageButton[@content-desc=\"5\"]\n\n" +
+            "<android.widget.ImageButton content-desc=\"Customize and control Google Chrome\" />\n" +
+            "Target: 3 dots\n" +
+            "Expected: //android.widget.ImageButton[@content-desc=\"Customize and control Google Chrome\"]\n\n" +
+            "<android.widget.ImageView resource-id=\"com.app:id/profile_icon\" />\n" +
+            "Target: person icon\n" +
+            "Expected: //android.widget.ImageView[@resource-id=\"com.app:id/profile_icon\"]\n\n" +
+            "<android.widget.Button content-desc=\"Add city\" resource-id=\"com.google.android.deskclock:id/fab\" />\n" +
+            "Target: plus icon\n" +
+            "Expected: //android.widget.Button[@content-desc=\"Add city\"]\n\n" +
+            "<android.widget.FrameLayout content-desc=\"Alarm\" resource-id=\"com.google.android.deskclock:id/tab_menu_alarm\" />\n" +
+            "Target: Alarm\n" +
+            "Expected: //android.widget.FrameLayout[@content-desc=\"Alarm\"]\n\n" +
+            "Now analyze the following:";
+
+
+
+
+
 
 
         public async Task<string> OpenAiServiceRequest(string userPrompts, AiRequestType aiRequest)
@@ -55,7 +77,6 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
                 if (completion?.Content != null && completion.Content.Count > 0)
                 {
                     apiResponce = completion.Content[0].Text;
-
                 }
                 else
                 {

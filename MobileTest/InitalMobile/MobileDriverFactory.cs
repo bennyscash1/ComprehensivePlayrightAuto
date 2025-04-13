@@ -15,14 +15,14 @@ using Microsoft.Extensions.Options;
 namespace ComprehensiveAutomation.MobileTest.Inital
 {
   
-    public class MobileDriverFactory : Base, IDisposable
+    public class MobileDriverFactory : Base
     {
         public AndroidDriver appiumDriver;
         public static bool runOnRealDevice = true;
         public static bool toInstallApp = false;
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
-        public MobileDriverFactory()
+        public MobileDriverFactory(string appName ="")
         {
             if (runOnRealDevice)
             {
@@ -77,8 +77,8 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 150000);
 
-            appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.calculator");
-            appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.calculator2.Calculator");
+            appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.deskclock");
+            appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.deskclock.DeskClock");
 
             //Install from download url - or reset app data
             if (toInstallApp)
@@ -160,5 +160,5 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             appiumDriver.Quit();
         }
 
-        }
+    }
 }

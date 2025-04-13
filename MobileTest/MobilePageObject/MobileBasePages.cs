@@ -34,6 +34,11 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject
             MobileClickElement(i_elementLocator);
             return this;
         }
+        public MobileBasePages WaitForPageToLoad()
+        {
+            WaitUntilMobilePageStable();
+            return this;
+        }
 
     }
 }

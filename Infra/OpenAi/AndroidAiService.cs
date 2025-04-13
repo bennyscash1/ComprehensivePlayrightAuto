@@ -12,8 +12,10 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
         {          
             OpenAiService openAiService = new OpenAiService();
             string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
-                $"Here is the full app XML source:\n{fullPageSource}\n\n" +
-                $"I need you to return only the XPath locator for the button with the label: {buttonName}",
+                $"Here is the full app XML source:," +
+                $" I need to find the XPath locator for the button or input field for>>: '{buttonName}'\n\n" +
+                $"{fullPageSource}\n\n" +
+                $"Please return only xpath without any other text",
                 OpenAiService.AiRequestType.MobileRequest);
             bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);
             if (isLocatorValid)

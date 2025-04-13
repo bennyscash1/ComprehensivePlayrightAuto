@@ -97,6 +97,42 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
             var elementDetails = $"Element {el} sendkeys faild within {timeOutInSeconds} seconds.";
             Assert.That(elementClick, elementDetails);
         }
+        public void WaitUntilMobilePageStable()
+        {
+            int attempt = 0;
+            int maxAttampForLoadPage = 15;
+            bool isStable = false;
+            string previousSource = string.Empty;
+            string currentSource = appiumDriver.PageSource;
+
+            while (attempt++ < maxAttampForLoadPage)
+            {
+                Thread.Sleep(200); // Wait a bit between checks
+
+                previousSource = currentSource;
+                currentSource = appiumDriver.PageSource;
+
+                if (previousSource.Equals(currentSource))
+                {
+                    // Confirm stability for a few checks (2 more)
+                    Thread.Sleep(200);
+                    var secondCheck = appiumDriver.PageSource;
+                    Thread.Sleep(200);
+                    var thirdCheck = appiumDriver.PageSource;
+
+                    if (secondCheck.Equals(currentSource) && thirdCheck.Equals(currentSource))
+                    {
+                        isStable = true;
+                        break;
+                    }
+                }
+
+                attempt++;
+            }
+
+            var failMessage = $"Page did not stabilize within {timeOutInSeconds} seconds.";
+            Assert.That(isStable, failMessage);
+        }
 
         public void MovbileClickBack()
         {

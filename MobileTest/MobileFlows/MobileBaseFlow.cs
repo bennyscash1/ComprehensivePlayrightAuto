@@ -1,4 +1,5 @@
 ﻿using ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Mac;
@@ -6,6 +7,7 @@ using SafeCash.Test.ApiTest.InternalApiTest.Buyer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,21 +24,22 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             mobileBasePages = new MobileBasePages(i_driver);
         }
 
-        public string GetFullPageElementByFirstTime()
+        public string GetFullPageSource()
         {
-            return MobileBasePages.GetMobileSourcePageLocator(appiumDriver);
+            string fullPageSource = appiumDriver.PageSource;
+            return fullPageSource;
         }
         public async Task ClickOnAiElement(string elementView)
         {
-            string fullPageSource = MobileBasePages.GetMobileSourcePageLocator(appiumDriver);
-            if (string.IsNullOrEmpty(fullPageSource))
-            {
-                fullPageSource = GetFullPageElementByFirstTime();
-            }
+            mobileBasePages.WaitForPageToLoad();
+            string fullPageSource = GetFullPageSource();
+   
+
             AndroidAiService androidAiService = new AndroidAiService();
             string locatorXpathFromAi = await androidAiService
                 .GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
             bool isLocatorValid = AndroidAiService.IsLocatorIsVald(locatorXpathFromAi);
+            Assert.That(isLocatorValid, $"The element for view {elementView} not being found");
             if (isLocatorValid)
             {
                 By element = By.XPath(locatorXpathFromAi);
@@ -45,9 +48,33 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             }
             else
             {
-                Console.WriteLine($"The element from ai is not valid element {locatorXpathFromAi}");
+                Console.WriteLine($"The element for user input {elementView}, from ai is not valid element {locatorXpathFromAi}");
+            }     
+        }
+        public async Task inputAiElement(string elementView, string inputText)
+        {
+            mobileBasePages.WaitForPageToLoad();
+            string fullPageSource = GetFullPageSource();
+            if (string.IsNullOrEmpty(fullPageSource))
+            {
+                fullPageSource = GetFullPageSource();
             }
-           
+            AndroidAiService androidAiService = new AndroidAiService();
+            string locatorXpathFromAi = await androidAiService
+                .GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
+            bool isLocatorValid = AndroidAiService.IsLocatorIsVald(locatorXpathFromAi);
+            Assert.That(isLocatorValid, $"The element for view {elementView} not being found");
+
+            if (isLocatorValid)
+            {
+                By element = By.XPath(locatorXpathFromAi);
+                mobileBasePages
+                    .fillText(element, inputText);
+            }
+            else
+            {
+                Console.WriteLine($"The element for user input {elementView}, from ai is not valid element {locatorXpathFromAi}");
+            }
         }
     }
 }

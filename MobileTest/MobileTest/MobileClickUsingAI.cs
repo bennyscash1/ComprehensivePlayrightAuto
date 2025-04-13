@@ -14,22 +14,39 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
     [TestFixture, Category(
         Categories.MobileAndroid),
     Category(TestLevel.Level_1)]
-    public class MobileClickUsingAI : MobileDriverFactory
+    public class MobileClickUsingAI 
     {
         [Test]
         public async Task _MobileClickUsingAI()
         {
+            MobileDriverFactory mobileDriver = new MobileDriverFactory();
+            MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
 
+            #region click or enter text for ai chrome
+            //   await mobileLoginFlow
+            //       .ClickOnAiElement("Use without account");
+            //  /* await mobileLoginFlow
+            //      .ClickOnAiElement("Continue");*/
+            //   await mobileLoginFlow
+            //    .ClickOnAiElement("More");
+            //   await mobileLoginFlow
+            //   .ClickOnAiElement("Got it");
+            ///*   await mobileLoginFlow
+            //   .ClickOnAiElement("3 dots on top for settings");*/
+            //   await mobileLoginFlow
+            //     .inputAiElement("Search or type URL", "shalom");
+            #endregion
 
-            MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(appiumDriver);
+            #region for clock ai 
+            await mobileLoginFlow.ClickOnAiElement("Stopwatch");
 
-            #region Give permission for mobile
-            await mobileLoginFlow
-                .ClickOnAiElement("5");
-            await mobileLoginFlow
-              .ClickOnAiElement("x");
-            await mobileLoginFlow
-              .ClickOnAiElement("7");
+            await mobileLoginFlow.ClickOnAiElement("Alarm");
+            await mobileLoginFlow.ClickOnAiElement("Bedtime");
+
+         /*   await mobileLoginFlow
+                 .inputAiElement("Search for a city", "Jerusalem");
+            await mobileLoginFlow.
+             ClickOnAiElement("List -  jerusalem israel");*/
             #endregion
         }
     }
