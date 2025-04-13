@@ -24,6 +24,16 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject
         {
             appiumDriver = i_driver;
         }
+        public static string GetMobileSourcePageLocator(AppiumDriver appiumDriver)
+        {
+            return appiumDriver.PageSource;
+        }
+
+        public MobileBasePages ClickOnElementByLocator(By i_elementLocator)
+        {
+            MobileClickElement(i_elementLocator);
+            return this;
+        }
 
     }
 }
