@@ -22,11 +22,13 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         public static bool toInstallApp = false;
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
-        public MobileDriverFactory(string appName ="")
+        public MobileDriverFactory(
+            string appP = "com.google.android.deskclock", 
+            string appA = "com.android.deskclock.DeskClock")
         {
             if (runOnRealDevice)
             {
-                appiumDriver = InitAppiumDriver(toInstallApp);
+                appiumDriver = InitAppiumDriver(appP, appA, toInstallApp);
             }
             else
             {
@@ -34,11 +36,13 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             }
         }
 
-        public AndroidDriver InitAppiumDriver(bool toInstallApp, bool retry = true)
+        public AndroidDriver InitAppiumDriver(string appP, string appA, 
+            bool toInstallApp, bool retryInstallUiAutomator = true)
+            
         {
             try
             {
-                var appiumOptions = InitAppiumOptions();
+                var appiumOptions = InitAppiumOptions(appP, appA);
                 var uri = new Uri("http://127.0.0.1:4723/wd/hub");
                 var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(3));
                 return driver;
@@ -47,11 +51,11 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             {
                 Console.WriteLine($"Appium driver initialization failed: {ex.Message}");
 
-                if (retry)
+                if (retryInstallUiAutomator)
                 {
                     UninstallUiAutomator2Packages();
                     Console.WriteLine("Retrying Appium driver initialization...");
-                    return InitAppiumDriver(toInstallApp, retry: false);
+                    return InitAppiumDriver(appP, appA, toInstallApp, retryInstallUiAutomator: false);
                 }
 
                 throw new Exception("Failed to initialize Appium driver after retrying.", ex);
@@ -66,7 +70,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
 
             return driver;
         }
-        public AppiumOptions InitAppiumOptions()
+        public AppiumOptions InitAppiumOptions(string appPackage, string appActivity)
         {
             string deviceUuid = GetDeviceUUID();
 
@@ -77,8 +81,8 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 150000);
 
-            appiumOptions.AddAdditionalAppiumOption("appPackage", "com.google.android.deskclock");
-            appiumOptions.AddAdditionalAppiumOption("appActivity", "com.android.deskclock.DeskClock");
+            appiumOptions.AddAdditionalAppiumOption("appPackage", appPackage);
+            appiumOptions.AddAdditionalAppiumOption("appActivity", appActivity);
 
             //Install from download url - or reset app data
             if (toInstallApp)

@@ -39,6 +39,7 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             "<android.widget.FrameLayout content-desc=\"Alarm\" resource-id=\"com.google.android.deskclock:id/tab_menu_alarm\" />\n" +
             "Target: Alarm\n" +
             "Expected: //android.widget.FrameLayout[@content-desc=\"Alarm\"]\n\n" +
+            "Important: Return ONLY the raw XPath string (no markdown, no quotes, no formatting).\n" +
             "Now analyze the following:";
 
 
@@ -77,6 +78,7 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
                 if (completion?.Content != null && completion.Content.Count > 0)
                 {
                     apiResponce = completion.Content[0].Text;
+
                 }
                 else
                 {

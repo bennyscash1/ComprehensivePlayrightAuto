@@ -19,7 +19,8 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test]
         public async Task _MobileClickUsingAI()
         {
-            MobileDriverFactory mobileDriver = new MobileDriverFactory();
+            MobileDriverFactory mobileDriver = new MobileDriverFactory("com.google.android.apps.maps" ,
+                "com.google.android.maps.MapsActivity");
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
 
             #region click or enter text for ai chrome
@@ -38,10 +39,10 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             #endregion
 
             #region for clock ai 
-            await mobileLoginFlow.ClickOnAiElement("Stopwatch");
+            await mobileLoginFlow.ClickOnAiElement("Sign in");
 
-            await mobileLoginFlow.ClickOnAiElement("Alarm");
-            await mobileLoginFlow.ClickOnAiElement("Bedtime");
+            await mobileLoginFlow.ClickOnAiElement("+ Add account");
+           // await mobileLoginFlow.ClickOnAiElement("Bedtime");
 
          /*   await mobileLoginFlow
                  .inputAiElement("Search for a city", "Jerusalem");
