@@ -19,10 +19,10 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test]
         public async Task _MobileClickUsingAI()
         {
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("camera");
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("gallery3d");
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
             #region for clock ai 
-            await mobileLoginFlow.ClickOnAiElement("the big center button Take image button");
+            await mobileLoginFlow.ClickOnAiElement("לחץ על כפתור שמצלם תמונה");
 
             await mobileLoginFlow.ClickOnAiElement("דיוקן");
             #endregion

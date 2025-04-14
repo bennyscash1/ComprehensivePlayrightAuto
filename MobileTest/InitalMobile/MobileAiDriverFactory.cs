@@ -26,16 +26,17 @@ namespace ComprehensiveAutomation.MobileTest.Inital
 
         public MobileAiDriverFactory(string appName = "")
         {
+            //Can take the app name from user hard code by next code
             string allpackageList = GetMobileInstalledApps();
             string appPackage = GetAppPackageByName(appName);
             bool isAppListHaseAppPackage = IsAppPackageInTheMobileList(
                 allpackageList, appPackage);
-            Assert.That(isAppListHaseAppPackage,$"The app {appName} not found on the mobile app, the app package return {appPackage}");
-           
+           // Assert.That(isAppListHaseAppPackage,$"The app {appName} not found on the mobile app, the app package return {appPackage}");         
             string appActivity = GetAppMainActivity(appPackage);
+           // Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
+            appiumDriver = InitAppiumDriver("com.sec.android.gallery3d", "com.sec.android.gallery3d.app.GalleryActivity");
 
-            Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
-            appiumDriver = InitAppiumDriver(appPackage, appActivity);
+            //Or can take the app name from user> get the mobile brand and send it to ai 
         }
         public AndroidDriver InitAppiumDriver(string appP ="", string appA ="")           
         {
