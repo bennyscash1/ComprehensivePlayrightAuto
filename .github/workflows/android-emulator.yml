@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # עובד הרבה יותר טוב מאשר ubuntu
     timeout-minutes: 35
 
     steps:
@@ -22,24 +22,26 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install Appium
+    - name: Install Appium and UIAutomator2 driver
       run: |
-        npm install -g appium
+        npm install -g appium@2.4.1
+        appium driver install uiautomator2
         appium -v
 
     - name: Start Appium server
       run: |
-        nohup appium --log-level info > appium.log 2>&1 &
+        nohup appium --base-path /wd/hub --log-level debug > appium.log 2>&1 &
         sleep 10
 
-    - name: Start Android emulator
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 30
-        target: default
-        arch: x86_64
-        profile: pixel
-        script: echo "📱 Emulator is running"
+    - name: Set up Android emulator
+      run: |
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;google_apis;x86"
+        echo no | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --force
+        $ANDROID_HOME/emulator/emulator -list-avds
+        nohup $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect > emulator.log 2>&1 &
+        sleep 30
+        $ANDROID_HOME/platform-tools/adb wait-for-device
+        $ANDROID_HOME/platform-tools/adb shell getprop sys.boot_completed
 
     - name: Restore dependencies
       run: dotnet restore
@@ -49,3 +51,9 @@ jobs:
 
     - name: Run MobileAndroid tests
       run: dotnet test --filter "TestCategory=MobileAndroid"
+
+    - name: Print Appium logs
+      if: always()
+      run: |
+        echo "========= Appium Logs ========="
+        cat appium.log || echo "No log file found"
