@@ -24,7 +24,7 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             #region for clock ai 
             await mobileLoginFlow.ClickOnAiElement("המשך");
 
-            await mobileLoginFlow.inputAiElement("input phone number", "0501234568");
+            await mobileLoginFlow.InputAiElement("input phone number", "0501234568");
             #endregion
 
 

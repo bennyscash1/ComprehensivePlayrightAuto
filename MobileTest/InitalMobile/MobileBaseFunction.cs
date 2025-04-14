@@ -79,7 +79,7 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
             Assert.That(elementClick, elementDetails);
         }
 
-        public void fillText(By el, String text)
+        public void MobileInputTextToField(By el, String text)
         {
             bool elementClick = false;
             int attempt = 0;

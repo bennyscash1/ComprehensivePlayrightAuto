@@ -28,12 +28,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject
         {
             return appiumDriver.PageSource;
         }
-
-        public MobileBasePages ClickOnElementByLocator(By i_elementLocator)
-        {
-            MobileClickElement(i_elementLocator);
-            return this;
-        }
+ 
         public MobileBasePages WaitForPageToLoad()
         {
             WaitUntilMobilePageStable();
