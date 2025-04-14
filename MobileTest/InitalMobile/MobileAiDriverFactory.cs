@@ -34,7 +34,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
            // Assert.That(isAppListHaseAppPackage,$"The app {appName} not found on the mobile app, the app package return {appPackage}");         
             string appActivity = GetAppMainActivity(appPackage);
            // Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
-            appiumDriver = InitAppiumDriver("com.sec.android.gallery3d", "com.sec.android.gallery3d.app.GalleryActivity");
+            appiumDriver = InitAppiumDriver(appPackage, appActivity);
 
             //Or can take the app name from user> get the mobile brand and send it to ai 
         }

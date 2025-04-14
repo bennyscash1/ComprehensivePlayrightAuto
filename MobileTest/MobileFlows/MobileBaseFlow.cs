@@ -61,10 +61,8 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         {
             mobileBasePages.WaitForPageToLoad();
             string fullPageSource = GetFullPageSource();
-            if (string.IsNullOrEmpty(fullPageSource))
-            {
-                fullPageSource = GetFullPageSource();
-            }
+            fullPageSource = GetFullPageSource();
+            
             AndroidAiService androidAiService = new AndroidAiService();
             string locatorXpathFromAi = await androidAiService
                 .GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
