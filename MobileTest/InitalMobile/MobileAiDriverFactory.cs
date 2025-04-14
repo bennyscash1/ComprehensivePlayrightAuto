@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
+using NUnit.Framework;
 
 namespace ComprehensiveAutomation.MobileTest.Inital
 {
@@ -26,11 +27,15 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         public MobileAiDriverFactory(string appName = "")
         {
             string allpackageList = GetMobileInstalledApps();
-
             string appPackage = GetAppPackageByName(appName);
+            bool isAppListHaseAppPackage = IsAppPackageInTheMobileList(
+                allpackageList, appPackage);
+            Assert.That(isAppListHaseAppPackage,$"The app {appName} not found on the mobile app, the app package return {appPackage}");
+           
             string appActivity = GetAppMainActivity(appPackage);
+
+            Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
             appiumDriver = InitAppiumDriver(appPackage, appActivity);
-        
         }
         public AndroidDriver InitAppiumDriver(string appP ="", string appA ="")           
         {
@@ -139,16 +144,26 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         {
             try
             {
-                var installedPackages = appiumDriver.ExecuteScript("mobile: shell", new Dictionary<string, object>
+                var process = new Process
                 {
-                    { "command", "pm list packages" }
-                }) as string;
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "adb",
+                        Arguments = "shell pm list packages",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
 
-                // Process the output to get a clean list of package names and join into a single string
-                string packageList = string.Join(", ", installedPackages
-                    .Split('\n')
-                    .Where(line => !string.IsNullOrWhiteSpace(line))
-                    .Select(line => line.Replace("package:", "").Trim()));
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                string packageList = string.Join(", ",
+                    output.Split('\n')
+                          .Where(line => !string.IsNullOrWhiteSpace(line))
+                          .Select(line => line.Replace("package:", "").Trim()));
 
                 return packageList;
             }
@@ -157,6 +172,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
                 return $"Error retrieving installed apps: {ex.Message}";
             }
         }
+
         #region Get app package and app activity
         public string GetAppPackageByName(string appName)
         {
@@ -175,18 +191,25 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             process.Start();
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
-            // Split into lines and find the one containing the appName (case-insensitive)
-            var lines = output.Split('\n');
-            foreach (var line in lines)
-            {
-                if (line.IndexOf(appName, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    return line.Trim().Replace("package:", "").Trim();
-                }
-            }
 
-            return null;
+            var lines = output.Split('\n')
+                              .Select(line => line.Trim().Replace("package:", "").Trim())
+                              .Where(pkg => !string.IsNullOrWhiteSpace(pkg))
+                              .ToList();
+
+            // Try exact match first
+            var exactMatch = lines.FirstOrDefault(pkg => pkg.Equals(appName, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrEmpty(exactMatch))
+                return exactMatch;
+
+            // Then try packages that end with ".appname" or contain ".appname"
+            var smartMatch = lines.FirstOrDefault(pkg =>
+                pkg.EndsWith("." + appName, StringComparison.OrdinalIgnoreCase) ||
+                pkg.Contains("." + appName + ".", StringComparison.OrdinalIgnoreCase));
+
+            return smartMatch;
         }
+
         public string GetAppMainActivity(string appPackage)
         {
             var process = new System.Diagnostics.Process
@@ -221,7 +244,20 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         }
 
         #endregion
+        #region test if the app list include the app package
+        public bool IsAppPackageInTheMobileList(string appList, string appPackage)
+        {
+            if (string.IsNullOrWhiteSpace(appList) || string.IsNullOrWhiteSpace(appPackage))
+                return false;
 
+            var packages = appList.Split(',')
+                                  .Select(p => p.Trim()) // clean up spaces
+                                  .Where(p => !string.IsNullOrEmpty(p));
+
+            return packages.Contains(appPackage);
+        }
+
+        #endregion
 
         public void Dispose()
         {

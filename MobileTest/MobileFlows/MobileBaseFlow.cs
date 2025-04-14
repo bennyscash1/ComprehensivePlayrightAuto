@@ -39,17 +39,23 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             string locatorXpathFromAi = await androidAiService
                 .GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
             bool isLocatorValid = AndroidAiService.IsLocatorIsVald(locatorXpathFromAi);
-            Assert.That(isLocatorValid, $"The element for view {elementView} not being found");
+            int retry = 0;
+            while (!isLocatorValid && retry<2)
+            {
+                locatorXpathFromAi = await androidAiService
+                .GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
+                isLocatorValid = AndroidAiService.IsLocatorIsVald(locatorXpathFromAi);
+                retry++;
+
+            }
             if (isLocatorValid)
             {
                 By element = By.XPath(locatorXpathFromAi);
                 mobileBasePages
                     .ClickOnElementByLocator(element);
             }
-            else
-            {
-                Console.WriteLine($"The element for user input {elementView}, from ai is not valid element {locatorXpathFromAi}");
-            }     
+            Assert.That(isLocatorValid, $"The element for view {elementView} not being found");
+
         }
         public async Task inputAiElement(string elementView, string inputText)
         {
