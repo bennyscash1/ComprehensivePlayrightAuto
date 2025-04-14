@@ -17,6 +17,13 @@ Install uiautomator2 (first time install or in case you get error from appium se
 adb uninstall io.appium.uiautomator2.server
 adb uninstall io.appium.uiautomator2.server.test
 
+Open emulator >>
+cd C:\Users\benis\AppData\Local\Android\Sdk\emulator
+Get list of emulators:
+.\emulator.exe -list-avds
+Open emulator:
+.\emulator.exe -avd "Small_Phone_API_35"
+
 =======
 Automation API for Web and Mobile Testing
 Overview
