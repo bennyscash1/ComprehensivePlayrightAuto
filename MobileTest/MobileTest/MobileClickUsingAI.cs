@@ -19,13 +19,14 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test]
         public async Task _MobileClickUsingAI()
         {
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("safecashapps");
+            //Enter app name
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("Calculator");
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
-            #region for clock ai 
-            await mobileLoginFlow.ClickOnAiElement("המשך");
-
-            await mobileLoginFlow.InputAiElement("input phone number", "0501234568");
-            #endregion
+            //Click on the app
+            await mobileLoginFlow.ClickOnAiElement("Click on number 5");
+            await mobileLoginFlow.ClickOnAiElement("Click on double button");
+            await mobileLoginFlow.ClickOnAiElement("Click on number 2");
+            await mobileLoginFlow.InputAiElement("input field phone number", "0501234568");
 
 
             #region click or enter text for ai chrome

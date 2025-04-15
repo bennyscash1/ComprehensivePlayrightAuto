@@ -1,4 +1,4 @@
-﻿using ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows;
+﻿/*using ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,3 +33,4 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         }
     }
 }
+*/
