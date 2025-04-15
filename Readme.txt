@@ -8,6 +8,9 @@ allure generate allure-results --clean -o allure-report
 to run browser>:
 allure serve allure-results 
 
+Run via command line
+
+
 
 Mobile:
 Open any app in your mobile once it with adb and run>:
@@ -23,6 +26,8 @@ Get list of emulators:
 .\emulator.exe -list-avds
 Open emulator:
 .\emulator.exe -avd "Small_Phone_API_35"
+For reset deviec:
+.\emulator.exe -avd "Small_Phone_API_35" -no-snapshot-load
 
 =======
 Automation API for Web and Mobile Testing
