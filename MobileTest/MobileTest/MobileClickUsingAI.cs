@@ -24,9 +24,13 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
             //Click on the app
             await mobileLoginFlow.ClickOnAiElement("Click on number 5");
-            await mobileLoginFlow.ClickOnAiElement("Click on double button");
-            await mobileLoginFlow.ClickOnAiElement("Click on number 2");
-            await mobileLoginFlow.InputAiElement("input field phone number", "0501234568");
+            await mobileLoginFlow.InputAiElement("search input field", "Hello world");
+
+
+
+            await mobileLoginFlow.ClickOnAiElement("+ plus button");
+            await mobileLoginFlow.ClickOnAiElement("Click on number 6");
+            await mobileLoginFlow.ClickOnAiElement("Click on =");
 
 
             #region click or enter text for ai chrome

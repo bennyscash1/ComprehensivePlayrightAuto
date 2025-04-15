@@ -5,6 +5,7 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
 {
     public class OpenAiService
     {
+        public static string openAiModel = "gpt-4o-mini";
         public enum AiRequestType
         {
             ApiRequest,
@@ -44,14 +45,9 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
 
 
 
-
-
-
-
         public async Task<string> OpenAiServiceRequest(string userPrompts, AiRequestType aiRequest)
         {
-            OpenAiData openAiData = new OpenAiData();
-            string model = OpenAiData.model;
+            string model = openAiModel;
             string prePrompt = GetStockPrePromptPrompts(aiRequest);
 
             string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("API key is missing from environment variables.");
