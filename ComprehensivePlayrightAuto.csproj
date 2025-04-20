@@ -81,5 +81,11 @@
   <ItemGroup>
     <Folder Include="Infra\Docker\emulator-gui\" />
   </ItemGroup>
+	
+	<ItemGroup>
+		<None Update="MobileTest\emulator\**\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

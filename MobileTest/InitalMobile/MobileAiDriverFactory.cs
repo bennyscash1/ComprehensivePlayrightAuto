@@ -38,27 +38,34 @@ namespace ComprehensiveAutomation.MobileTest.Inital
 
             //Or can take the app name from user> get the mobile brand and send it to ai 
         }
-        public AndroidDriver InitAppiumDriver(string appP ="", string appA ="")           
+        private int retryCount = 0;
+        private const int maxRetries = 1;
+        public AndroidDriver InitAppiumDriver(string appP = "", string appA = "")
         {
             try
             {
                 var appiumOptions = InitAppiumOptions(appP, appA);
                 var uri = new Uri("http://127.0.0.1:4723/wd/hub");
                 var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(3));
+
+                // Reset retry count after successful connection
+                retryCount = 0;
                 return driver;
             }
             catch (Exception ex)
             {
-                if (retryInstallUiAutomator)
+                if (retryCount < maxRetries)
                 {
+                    retryCount++;
                     UninstallUiAutomator2Packages();
-                    Console.WriteLine("Retrying Appium driver initialization...");
-                    return InitAppiumDriver();
+                    Console.WriteLine($"Retrying Appium driver initialization... (attempt {retryCount})");
+                    return InitAppiumDriver(appP, appA);
                 }
 
                 throw new Exception("Failed to initialize Appium driver after retrying.", ex);
             }
         }
+
 
         public AppiumOptions InitAppiumOptions(string appP, string appA)
         {
@@ -141,6 +148,8 @@ namespace ComprehensiveAutomation.MobileTest.Inital
                 Console.WriteLine($"Error running adb command '{args}': {e.Message}");
             }
         }
+
+
         public string GetMobileInstalledApps()
         {
             try
@@ -259,7 +268,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         }
 
         #endregion
-
+    
         public void Dispose()
         {
             appiumDriver.Quit();

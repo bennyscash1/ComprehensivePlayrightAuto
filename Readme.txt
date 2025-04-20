@@ -24,9 +24,9 @@ Open emulator >>
 cd C:\Users\benis\AppData\Local\Android\Sdk\emulator
 Get list of emulators:
 .\emulator.exe -list-avds
-Open emulator:
+Open emulator fast whay:
 .\emulator.exe -avd "Small_Phone_API_35"
-For reset deviec:
+For hard load reset deviec:
 .\emulator.exe -avd "Small_Phone_API_35" -no-snapshot-load
 
 =======

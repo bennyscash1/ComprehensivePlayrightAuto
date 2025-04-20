@@ -8,6 +8,7 @@ using ComprehensiveAutomation.MobileTest.Inital;
 using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 using NUnit.Framework;
 using OpenQA.Selenium.DevTools.V117.Runtime;
+using ComprehensivePlayrightAuto.MobileTest.InitalMobile;
 
 namespace ComprehensiveAutomation.MobileTest.MobileTest
 {
@@ -19,34 +20,20 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test]
         public async Task _MobileClickUsingAI()
         {
-            //Enter app name
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("Calculator");
+            MobileDevicesMenegar mobileDevicesMenegar = new MobileDevicesMenegar();
+
+            mobileDevicesMenegar.RunEmulator("Small_Phone_API_35");
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("chrome");
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
             //Click on the app
-            await mobileLoginFlow.ClickOnAiElement("Click on number 5");
-            await mobileLoginFlow.InputAiElement("search input field", "Hello world");
+            await mobileLoginFlow.ClickOnAiElement("User without an account");
 
+            await mobileLoginFlow.ClickOnAiElement("More");
 
+            await mobileLoginFlow.InputAiElement("click on search input", "xxx");
 
-            await mobileLoginFlow.ClickOnAiElement("+ plus button");
             await mobileLoginFlow.ClickOnAiElement("Click on number 6");
-            await mobileLoginFlow.ClickOnAiElement("Click on =");
 
-
-            #region click or enter text for ai chrome
-            //   await mobileLoginFlow
-            //       .ClickOnAiElement("Use without account");
-            //  /* await mobileLoginFlow
-            //      .ClickOnAiElement("Continue");*/
-            //   await mobileLoginFlow
-            //    .ClickOnAiElement("More");
-            //   await mobileLoginFlow
-            //   .ClickOnAiElement("Got it");
-            ///*   await mobileLoginFlow
-            //   .ClickOnAiElement("3 dots on top for settings");*/
-            //   await mobileLoginFlow
-            //     .inputAiElement("Search or type URL", "shalom");
-            #endregion
         }
     }
 }
