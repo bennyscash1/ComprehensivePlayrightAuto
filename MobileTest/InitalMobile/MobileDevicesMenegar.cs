@@ -18,11 +18,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
             {
                 throw new FileNotFoundException("emulator.exe not found at: " + emulatorExe);
             }
-
+            string command = $"-avd \"{defaultEmulator}\"";
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = emulatorExe,
-                Arguments = $"-avd \"{defaultEmulator}\"",
+                Arguments = command,
                 WorkingDirectory = emulatorPath, // רק התיקייה – לא הקובץ
                 UseShellExecute = false,
                 CreateNoWindow = false
