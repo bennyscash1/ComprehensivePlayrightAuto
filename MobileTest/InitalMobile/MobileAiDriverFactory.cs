@@ -22,6 +22,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         public static bool runOnRealDevice = true;
         public static bool toInstallApp = false;
         private static bool retryInstallUiAutomator = true;
+        public static string baseAppiumUrl = "http://127.0.0.1:4723/wd/hub";
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
         public MobileAiDriverFactory(string appName = "")
@@ -45,7 +46,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             try
             {
                 var appiumOptions = InitAppiumOptions(appP, appA);
-                var uri = new Uri("http://127.0.0.1:4723/wd/hub");
+                var uri = new Uri(baseAppiumUrl);
                 var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(3));
 
                 // Reset retry count after successful connection

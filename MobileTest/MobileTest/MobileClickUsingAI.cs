@@ -17,23 +17,25 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
     Category(TestLevel.Level_1)]
     public class MobileClickUsingAI 
     {
-        [Test]
-        public async Task _MobileClickUsingAI()
+        [SetUp]
+        public async Task SetupMobileDevice()
         {
             MobileDevicesMenegar mobileDevicesMenegar = new MobileDevicesMenegar();
 
-            mobileDevicesMenegar.RunEmulator("Small_Phone_API_35");
+            mobileDevicesMenegar.EnsureEmulatorRunning();
+            await mobileDevicesMenegar.RunAppiumServer();  
+        }
+        [Test]
+        public async Task _MobileClickUsingAI()
+        {
             MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("chrome");
             MobileLoginFlow mobileLoginFlow = new MobileLoginFlow(mobileDriver.appiumDriver);
             //Click on the app
             await mobileLoginFlow.ClickOnAiElement("User without an account");
-
             await mobileLoginFlow.ClickOnAiElement("More");
-
-            await mobileLoginFlow.InputAiElement("click on search input", "xxx");
-
-            await mobileLoginFlow.ClickOnAiElement("Click on number 6");
-
+            await mobileLoginFlow.ClickOnAiElement("click on Got it");
+            await mobileLoginFlow.InputAiElement("Search input field", "Automatico");
+            await mobileLoginFlow.ClickOnAiElement("click on the first result from the list");
         }
     }
 }
