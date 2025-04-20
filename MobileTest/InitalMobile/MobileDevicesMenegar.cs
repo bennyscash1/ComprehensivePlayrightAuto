@@ -31,8 +31,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
             process.WaitForExit();
 
             var lines = output.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            return lines.Length > 1; // device(s) listed after header
+
+            // Skip header and check if any line ends with "device" (online)
+            return lines.Skip(1).Any(line => line.EndsWith("\tdevice"));
         }
+
 
         public void RestartAdb()
         {
@@ -56,11 +59,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
 
                     if (!File.Exists(emulatorExe))
                         throw new FileNotFoundException("emulator.exe not found at: " + emulatorExe);
-
+                    string commandAvd = $"-avd {emulatorName}";
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = emulatorExe,
-                        Arguments = $"-avd \"{emulatorName}\"",
+                        Arguments = commandAvd,
                         WorkingDirectory = emulatorPath,
                         UseShellExecute = false,
                         CreateNoWindow = false
@@ -68,10 +71,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
 
                     // Wait for emulator to appear in adb
                     int retries = 0;
-                    while (!IsAnyDeviceConnected() && retries++ < 15)
+                 
+                    while (!IsAnyDeviceConnected() && retries++ < 10)
                     {
                         Console.WriteLine("Waiting for emulator to appear in adb...");
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                     }
 
                     if (!IsAnyDeviceConnected())
@@ -84,12 +88,37 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
         #endregion
         public async Task RunAppiumServer()
         {
+            string baseUrlAppium = MobileAiDriverFactory.baseAppiumUrl; // e.g., http://127.0.0.1:4723
+            string statusUrl = $"{baseUrlAppium}/status";
+
+            bool IsAppiumRunning()
+            {
+                try
+                {
+                    using var client = new HttpClient();
+                    var response = client.GetAsync(statusUrl).Result;
+                    return response.IsSuccessStatusCode;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            // Check if already running
+            if (IsAppiumRunning())
+            {
+                Console.WriteLine("Appium server is already running.");
+                return;
+            }
+
+            // Start Appium server
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/C appium --address 127.0.0.1 --port 4723",
+                    Arguments = "/C appium --address 0.0.0.0 --port 4723 --base-path /wd/hub", // ✅ optional if using /wd/hub
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -100,29 +129,21 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
             process.Start();
             Console.WriteLine("Appium server starting...");
 
-            const string statusUrl = "http://127.0.0.1:4723/wd/hub/status";
-            var timeout = TimeSpan.FromSeconds(10);
-            var startTime = DateTime.UtcNow;
-
-            while (DateTime.UtcNow - startTime < timeout)
+            // Retry until it's available
+            int maxRetries = 10;
+            for (int i = 0; i < maxRetries; i++)
             {
-                try
+                if (IsAppiumRunning())
                 {
-                    using var httpClient = new HttpClient();
-                    var response = await httpClient.GetAsync(statusUrl);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine("Appium server is ready.");
-                        return;
-                    }
+                    Console.WriteLine("Appium server is ready.");
+                    return;
                 }
-                catch
-                {
-                    // ignore and retry
-                }
-                await Task.Delay(1000); // wait 1 second before retry
+
+                await Task.Delay(1000);
+                Console.WriteLine($"Waiting for Appium server... retry {i + 1}/{maxRetries}");
             }
-            throw new Exception("Appium server failed to start within 10 seconds.");
+
+            throw new Exception("Appium server failed to start after multiple retries.");
         }
 
     }

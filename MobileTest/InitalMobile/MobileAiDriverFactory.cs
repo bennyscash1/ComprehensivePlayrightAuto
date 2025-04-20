@@ -22,7 +22,8 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         public static bool runOnRealDevice = true;
         public static bool toInstallApp = false;
         private static bool retryInstallUiAutomator = true;
-        public static string baseAppiumUrl = "http://127.0.0.1:4723/wd/hub";
+        public static string baseAppiumUrl = "http://127.0.0.1:4723";
+        public static string fullAppiumUrl = "http://127.0.0.1:4723/wd/hub";
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
         public MobileAiDriverFactory(string appName = "")
