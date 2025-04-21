@@ -72,10 +72,10 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                     // Wait for emulator to appear in adb
                     int retries = 0;
                  
-                    while (!IsAnyDeviceConnected() && retries++ < 10)
+                    while (!IsAnyDeviceConnected() && retries++ < 40)
                     {
                         Console.WriteLine("Waiting for emulator to appear in adb...");
-                        Thread.Sleep(1000);
+                        Thread.Sleep(2000);
                     }
 
                     if (!IsAnyDeviceConnected())
@@ -86,15 +86,17 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
             Console.WriteLine("Device is connected via ADB.");
         }
         #endregion
+
+        #region appium server
         public async Task RunAppiumServer()
         {
-            string baseUrlAppium = MobileAiDriverFactory.baseAppiumUrl; // e.g., http://127.0.0.1:4723
-            string statusUrl = $"{baseUrlAppium}/status";
-
             bool IsAppiumRunning()
             {
                 try
                 {
+                    string baseUrlAppium = MobileAiDriverFactory.baseAppiumUrl; // 
+                    string statusUrl = $"{baseUrlAppium}/status";
+
                     using var client = new HttpClient();
                     var response = client.GetAsync(statusUrl).Result;
                     return response.IsSuccessStatusCode;
@@ -111,26 +113,25 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 Console.WriteLine("Appium server is already running.");
                 return;
             }
-
-            // Start Appium server
+            string appiumCommand = "/C appium --address 127.0.0.1 --port 4718";
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/C appium --address 0.0.0.0 --port 4723 --base-path /wd/hub", // ✅ optional if using /wd/hub
+                    Arguments = appiumCommand,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
-
             process.Start();
+
             Console.WriteLine("Appium server starting...");
 
             // Retry until it's available
-            int maxRetries = 10;
+            int maxRetries =10;
             for (int i = 0; i < maxRetries; i++)
             {
                 if (IsAppiumRunning())
@@ -145,6 +146,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
 
             throw new Exception("Appium server failed to start after multiple retries.");
         }
-
+        #endregion
     }
 }

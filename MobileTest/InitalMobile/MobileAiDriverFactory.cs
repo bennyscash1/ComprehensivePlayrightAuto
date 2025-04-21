@@ -22,8 +22,8 @@ namespace ComprehensiveAutomation.MobileTest.Inital
         public static bool runOnRealDevice = true;
         public static bool toInstallApp = false;
         private static bool retryInstallUiAutomator = true;
-        public static string baseAppiumUrl = "http://127.0.0.1:4723";
-        public static string fullAppiumUrl = "http://127.0.0.1:4723/wd/hub";
+        public static string baseAppiumUrl = "http://127.0.0.1:4718";
+        public static string apiumUrlWithWd = "http://127.0.0.1:4718/wd/hub";
         private static string appUrl = "https://github.com/bennyscash1/ComprehensivePlayrightAuto/releases/download/publicCalculator/calculatorUpdated.apk";
 
         public MobileAiDriverFactory(string appName = "")
@@ -33,9 +33,9 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             string appPackage = GetAppPackageByName(appName);
             bool isAppListHaseAppPackage = IsAppPackageInTheMobileList(
                 allpackageList, appPackage);
-           // Assert.That(isAppListHaseAppPackage,$"The app {appName} not found on the mobile app, the app package return {appPackage}");         
+           Assert.That(isAppListHaseAppPackage,$"The app '{appName}' not found on the mobile app, the app package return {appPackage}");         
             string appActivity = GetAppMainActivity(appPackage);
-           // Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
+           Assert.That(!string.IsNullOrEmpty(appActivity), $"The app activity for {appName} not found on the mobile app, the app package return {appPackage}");
             appiumDriver = InitAppiumDriver(appPackage, appActivity);
 
             //Or can take the app name from user> get the mobile brand and send it to ai 
@@ -48,13 +48,14 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             {
                 var appiumOptions = InitAppiumOptions(appP, appA);
                 var uri = new Uri(baseAppiumUrl);
-                var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(3));
+                var driver = new AndroidDriver(uri, appiumOptions, TimeSpan.FromMinutes(1));
 
                 // Reset retry count after successful connection
                 retryCount = 0;
                 return driver;
             }
             catch (Exception ex)
+
             {
                 if (retryCount < maxRetries)
                 {
@@ -62,12 +63,11 @@ namespace ComprehensiveAutomation.MobileTest.Inital
                     UninstallUiAutomator2Packages();
                     Console.WriteLine($"Retrying Appium driver initialization... (attempt {retryCount})");
                     return InitAppiumDriver(appP, appA);
-                }
 
+                }
                 throw new Exception("Failed to initialize Appium driver after retrying.", ex);
             }
         }
-
 
         public AppiumOptions InitAppiumOptions(string appP, string appA)
         {
@@ -78,7 +78,9 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             appiumOptions.DeviceName = deviceUuid;
             appiumOptions.AutomationName = "UiAutomator2";
             appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.Udid, deviceUuid);
-            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 150000);
+            appiumOptions.AddAdditionalAppiumOption(MobileCapabilityType.NewCommandTimeout, 10000);
+            appiumOptions.AddAdditionalAppiumOption("noReset", false);
+
             //Open the app if it exsist
             if (!string.IsNullOrEmpty(appP))
             {
