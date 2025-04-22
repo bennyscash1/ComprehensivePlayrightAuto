@@ -113,22 +113,28 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 Console.WriteLine("Appium server is already running.");
                 return;
             }
-            string appiumCommand = "/C appium --address 127.0.0.1 --port 4718";
+            string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
+            string appiumArg = "--address 127.0.0.1 --port 4718";
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "cmd.exe",
-                    Arguments = appiumCommand,
+                    FileName = appiumPath,
+                    Arguments = appiumArg,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
-            process.Start();
 
-            Console.WriteLine("Appium server starting...");
+            process.OutputDataReceived += (sender, args) => Console.WriteLine("OUT: " + args.Data);
+            process.ErrorDataReceived += (sender, args) => Console.WriteLine("ERR: " + args.Data);
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             // Retry until it's available
             int maxRetries =10;

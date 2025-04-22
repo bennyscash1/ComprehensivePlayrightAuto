@@ -41,7 +41,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
             //Or can take the app name from user> get the mobile brand and send it to ai 
         }
         private int retryCount = 0;
-        private const int maxRetries = 1;
+        private const int maxRetries = 4;
         public AndroidDriver InitAppiumDriver(string appP = "", string appA = "")
         {
             try
@@ -60,7 +60,7 @@ namespace ComprehensiveAutomation.MobileTest.Inital
                 if (retryCount < maxRetries)
                 {
                     retryCount++;
-                    UninstallUiAutomator2Packages();
+                   // UninstallUiAutomator2Packages();
                     Console.WriteLine($"Retrying Appium driver initialization... (attempt {retryCount})");
                     return InitAppiumDriver(appP, appA);
 
