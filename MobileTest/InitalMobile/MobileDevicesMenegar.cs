@@ -52,7 +52,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 {
                     Console.WriteLine("No devices found. Starting emulator...");
 
-                    string emulatorPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "", "emulator");
+                    string emulatorPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "emulator");
                     string emulatorExe = Path.Combine(emulatorPath, "emulator.exe");
 
                     if (!File.Exists(emulatorExe))
@@ -112,15 +112,16 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 return;
             }
             string appiumPath = @"C:\Bennys\Tools\AppiumService\appium.cmd";
+            string appiumLoalPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "AppiumService", "appium.cmd");
 
-           // string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
+            // string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
             string appiumArg = "--address 127.0.0.1 --port 4719";
 
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = appiumPath,
+                    FileName = appiumLoalPath,
                     Arguments = appiumArg,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
