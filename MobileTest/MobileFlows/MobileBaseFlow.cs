@@ -32,6 +32,10 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         public async Task ClickOnAiElement(string elementView)
         {
             By? element = await GetAiElementLocator(elementView);
+            if (element == null) //If element null send it one time again to the ai
+            {
+                element = await GetAiElementLocator(elementView);
+            }
             Assert.That(element != null, $"The element for view '{elementView}' was not found by AI.");
 
             mobileBasePages.MobileClickElement(element);

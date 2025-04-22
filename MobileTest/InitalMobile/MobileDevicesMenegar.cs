@@ -35,8 +35,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
             // Skip header and check if any line ends with "device" (online)
             return lines.Skip(1).Any(line => line.EndsWith("\tdevice"));
         }
-
-
         public void RestartAdb()
         {
             Console.WriteLine("Restarting ADB...");
@@ -54,7 +52,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 {
                     Console.WriteLine("No devices found. Starting emulator...");
 
-                    string emulatorPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "emulator");
+                    string emulatorPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "", "emulator");
                     string emulatorExe = Path.Combine(emulatorPath, "emulator.exe");
 
                     if (!File.Exists(emulatorExe))
@@ -113,8 +111,10 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile
                 Console.WriteLine("Appium server is already running.");
                 return;
             }
-            string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
-            string appiumArg = "--address 127.0.0.1 --port 4718";
+            string appiumPath = @"C:\Bennys\Tools\AppiumService\appium.cmd";
+
+           // string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
+            string appiumArg = "--address 127.0.0.1 --port 4719";
 
             var process = new Process
             {
