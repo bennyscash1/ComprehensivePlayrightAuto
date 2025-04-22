@@ -83,7 +83,7 @@
   </ItemGroup>
 	
 	<ItemGroup>
-		<None Update="MobileTest\emulator\**\*">
+		<None Update="MobileTest\mobileServices\emulator\**\*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
