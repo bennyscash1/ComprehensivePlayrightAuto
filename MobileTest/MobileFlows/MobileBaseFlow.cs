@@ -29,25 +29,32 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             string fullPageSource = appiumDriver.PageSource;
             return fullPageSource;
         }
-        public async Task ClickOnAiElement(string elementView)
+        public async Task TalkWithApp(string elementView, string inputText ="")
         {
             By? element = await GetAiElementLocator(elementView);
-            if (element == null) //If element null send it one time again to the ai
+            if (element ==null)
             {
                 element = await GetAiElementLocator(elementView);
             }
             Assert.That(element != null, $"The element for view '{elementView}' was not found by AI.");
 
-            mobileBasePages.MobileClickElement(element);
+            if (string.IsNullOrEmpty(inputText))
+            {
+                mobileBasePages.MobileClickElement(element);
+            }
+            else
+            {
+                mobileBasePages.MobileInputTextToField(element, inputText);
+            }
+
         }
 
-        public async Task InputAiElement(string elementView, string inputText)
+/*        public async Task InputAiElement(string elementView, string inputText)
         {
             By? element = await GetAiElementLocator(elementView);
             Assert.That(element != null, $"The element for view '{elementView}' was not found by AI.");
 
-            mobileBasePages.MobileInputTextToField(element, inputText);
-        }
+        }*/
 
         private async Task<By?> GetAiElementLocator(string elementView)
         {
