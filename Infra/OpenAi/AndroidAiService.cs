@@ -8,13 +8,14 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
     public class AndroidAiService 
     {
          public async Task <string> GetLocatorFromAndroidSourcePage(
-             string fullPageSource, string buttonName)
+             string fullPageSource, string userInputView)
         {          
             OpenAiService openAiService = new OpenAiService();
             string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
                 $"Here is the full app XML source:," +
                 $"{fullPageSource}\n\n" +
-                $" I need to find the XPath locator for the button or input field for>>: '{buttonName}'\n\n" +
+                $" I need to find the XPath locator for the button or input field for the next line>>: '\n"+
+                $"{userInputView}'\n\n"+
                 $"Please return only xpath without any other text",
                 OpenAiService.AiRequestType.MobileRequest);
             bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);

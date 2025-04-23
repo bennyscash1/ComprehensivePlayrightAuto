@@ -17,7 +17,7 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
     Category(TestLevel.Level_1)]
     public class MobileClickUsingAI 
     {
-        string appName = MobileEmulatorMenegar.GetForegroundAppPackage();
+        //string appName = MobileEmulatorMenegar.GetForegroundAppPackage();
 
         [SetUp]
         public async Task SetupMobileDevice()
@@ -30,15 +30,14 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test] 
         public async Task _MobileClickUsingAI()
         {
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory(appName);
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("dialer");
             MobileBaseFlow mobileFlow = new MobileBaseFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-           // await mobileFlow.TalkWithApp("Search contacts");
+            await mobileFlow.TalkWithApp("Click on Recents button ");
           //  await mobileFlow.TalkWithApp("Search contacts", "benny shor");
-            await mobileFlow.TalkWithApp("Blue icon with the 10 dots");
-            await mobileFlow.TalkWithApp("Click on number 8");
-            await mobileFlow.TalkWithApp("Click on =");
+            await mobileFlow.TalkWithApp("Click on the '3 dots' neer the search contacts");
+    
         }
 
 
