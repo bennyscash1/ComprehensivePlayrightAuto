@@ -30,14 +30,14 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         [Test] 
         public async Task _MobileClickUsingAI()
         {
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("dialer");
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("Calculator");
             MobileBaseFlow mobileFlow = new MobileBaseFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-            await mobileFlow.TalkWithApp("Click on Recents button ");
-          //  await mobileFlow.TalkWithApp("Search contacts", "benny shor");
-            await mobileFlow.TalkWithApp("Click on the '3 dots' neer the search contacts");
-    
+            await mobileFlow.TalkWithApp("Click on number 5");
+            await mobileFlow.TalkWithApp("Plus button");
+            await mobileFlow.TalkWithApp("Click on number 8");
+            await mobileFlow.TalkWithApp("Click on =");
         }
 
 
@@ -53,9 +53,9 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
         //await mobileLoginFlow.TalkWithYouApp("Click on number 8");
         //await mobileLoginFlow.TalkWithYouApp("Click on =");
 
-/*        await mobileLoginFlow.TalkWithYouApp("Click on 'use wihtout an account'");
-        await mobileLoginFlow.TalkWithYouApp("More button");
-        await mobileLoginFlow.TalkWithYouApp("Click on 'Got it'");
-        await mobileLoginFlow.TalkWithYouApp("Search input field", "Automatico");*/
+        /*        await mobileLoginFlow.TalkWithYouApp("Click on 'use wihtout an account'");
+                await mobileLoginFlow.TalkWithYouApp("More button");
+                await mobileLoginFlow.TalkWithYouApp("Click on 'Got it'");
+                await mobileLoginFlow.TalkWithYouApp("Search input field", "Automatico");*/
     }
 }
