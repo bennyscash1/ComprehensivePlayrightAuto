@@ -37,7 +37,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileServic
                 Console.WriteLine("Appium server is already running.");
                 return;
             }
-            string appiumLoalPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "AppiumService", "appium.cmd");
+            string appiumLoalPath = "C:\\Bennys\\Developing\\MobileServices\\AppiumService\\appium.cmd";
 
             // string appiumPath = @"C:\Users\benis\AppData\Roaming\npm\appium.cmd";
             string appiumArg = $"--address 127.0.0.1 --port {MobileAiDriverFactory.appiumPort}";

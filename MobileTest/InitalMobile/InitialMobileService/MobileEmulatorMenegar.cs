@@ -127,8 +127,8 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileServic
                 {
                     Console.WriteLine("No devices found. Starting emulator...");
 
-                    string emulatorPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "emulator");
-                    string emulatorExe = Path.Combine(emulatorPath, "emulator.exe");
+                    string emulatorPath = "C:\\Bennys\\Developing\\MobileServices\\emulator";
+                    string emulatorExe = "C:\\Bennys\\Developing\\MobileServices\\emulator\\emulator.exe";
 
                     if (!File.Exists(emulatorExe))
                         throw new FileNotFoundException("emulator.exe not found at: " + emulatorExe);

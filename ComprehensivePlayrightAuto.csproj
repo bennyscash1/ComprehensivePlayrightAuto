@@ -80,6 +80,7 @@
 
   <ItemGroup>
     <Folder Include="Infra\Docker\emulator-gui\" />
+    <Folder Include="MobileTest\MobileServices\NewFolder\" />
   </ItemGroup>
 	
 	<ItemGroup>
