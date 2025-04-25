@@ -40,6 +40,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             return (width, height);
         }
+        public static string GetDeviceScreenSizeString()
+        {
+            string output = RunShell("adb shell wm size");
+            return $"The current device screen size is: {output.Trim()}";
+        }
 
         public Process StartAdbRecordingToFile(string fullFilePath)
         {

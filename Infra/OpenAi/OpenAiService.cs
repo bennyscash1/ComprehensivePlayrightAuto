@@ -9,7 +9,8 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
         public enum AiRequestType
         {
             ApiRequest,
-            MobileRequest,
+            MobileTextInpueRequest,
+            MobileXyCordinateRequest,
             ImagesCompare
         }
         string mobilePrePrompt = "You are an automation expert.\n" +
@@ -44,6 +45,36 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             "Important: Return ONLY the raw XPath string (no markdown, no quotes, no formatting).\n" +
             "Now analyze the following:";
 
+        string mobilePrePromptCordinateXy = "You are an automation expert.\n" +
+            "Your task is:\n" +
+            "Given:\n" +
+            "- A full XML dump of a mobile screen hierarchy.\n" +
+            "- The screen width and height.\n" +
+            "- A pair of coordinates (X and Y).\n\n" +
+            "Rules:\n" +
+            "1. Identify the single UI element in the XML whose bounds ([left,top][right,bottom]) fully contain the given X and Y coordinates.\n" +
+            "2. If multiple elements overlap, select the deepest (most nested) element.\n" +
+            "3. Return only the XPath expression to locate that specific element.\n" +
+            "4. XPath must be precise and use resource-id or content-desc if available.\n" +
+            "   - Prefer resource-id when present.\n" +
+            "   - If resource-id is missing, use content-desc.\n" +
+            "   - If both are missing, use full tag and index path.\n" +
+            "5. If no matching element is found, return exactly the number 0 (zero) and nothing else.\n" +
+            "6. Never explain, apologize, or add any extra text.\n\n" +
+            "Examples of valid responses:\n" +
+            "- //android.widget.ImageButton[@resource-id=\"com.example:id/button\"]\n" +
+            "- //android.widget.TextView[@content-desc=\"Submit\"]\n" +
+            "- 0\n\n" +
+            "Important:\n" +
+            "- Screen coordinates are based on the screen size.\n" +
+            "- Bounds are given as [left,top][right,bottom] relative to the screen.\n" +
+            "- Coordinates on the exact border (equal to left or top but less than right or bottom) are considered inside the bounds.\n" +
+            "- Always return only one XPath or 0.\n" +
+            "7. Coordinates must be strictly inside the bounds:\n   " +
+            "- X must be >= left and < right.\n  " +
+            " - Y must be >= top and < bottom.\n   " +
+            "- No partial matches are allowed.\n   " +
+            "- Ignore elements where X and Y are not fully contained inside bounds.\n";
 
         public async Task<string> OpenAiServiceRequest(string userPrompts, AiRequestType aiRequest)
         {
@@ -97,8 +128,11 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             switch (aiRequest)
             {
 
-                case AiRequestType.MobileRequest:
+                case AiRequestType.MobileTextInpueRequest:
                     prePrompt = mobilePrePrompt;
+                    break;
+                case AiRequestType.MobileXyCordinateRequest:
+                    prePrompt = mobilePrePromptCordinateXy;
                     break;
                 /*                case AiPrePromptType.DataBaseAnalyst:
                                     prePrompt = DataBaseAnalyst;

@@ -43,15 +43,13 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
 
             var proccess = recordLocatoreService.StartAdbRecordingToFile(recordFile);
 
-            Thread.Sleep(3000);
+            Thread.Sleep(1000);
             recordLocatoreService.StopAdbRecording(proccess);
             #endregion
 
             #region Get touch coordinates
-            MobileAiDriverFactory mobileRunDriver = new MobileAiDriverFactory(runingApp);
 
-            MobileBaseFlow mobileRunFlow = new MobileBaseFlow(mobileRunDriver.appiumDriver);
-            mobileRunFlow.ClickOnXyUsingFile(recordFile);
+            await mobileRecordFlow.ClickOnXyUsingFile(recordFile);
             #endregion
 
         }

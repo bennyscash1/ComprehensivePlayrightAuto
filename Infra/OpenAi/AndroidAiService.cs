@@ -7,7 +7,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
 {
     public class AndroidAiService 
     {
-         public async Task <string> GetLocatorFromAndroidSourcePage(
+         public async Task <string> GetAndroidLocatorFromUserTextInput(
              string fullPageSource, string userInputView)
         {          
             OpenAiService openAiService = new OpenAiService();
@@ -17,7 +17,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 $" I need to find the XPath locator for the button or input field for the next line>>: '\n"+
                 $"{userInputView}'\n\n"+
                 $"Please return only xpath without any other text",
-                OpenAiService.AiRequestType.MobileRequest);
+                OpenAiService.AiRequestType.MobileTextInpueRequest);
             bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);
             if (isLocatorValid)
             {
@@ -29,18 +29,29 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 Console.WriteLine($"Invalid XPath locator: {responceLocatorFromAi}");
                 return string.Empty; // or throw an exception, or return a default value
             }   
-            //string pattern = @"By\.XPath\(\""(.*?)\""\)";
-            //string extractedXPath = "No XPath found in the response";
-            //Match match = Regex.Match(respnceOpenAi, pattern);
-            //if (match.Success)
-            //{
-            //    extractedXPath = match.Groups[1].Value;
-            //    Console.WriteLine($"Extracted XPath: {extractedXPath}");
-            //}
-            //else
-            //{
-            //    Console.WriteLine("No XPath found in the response.");
-            //}
+        }
+        public async Task<string> GetAndroidLocatorFromUserXyCordinate(
+            string fullPageSource, int x, int y, string screenSize)
+        {
+            OpenAiService openAiService = new OpenAiService();
+            string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
+                $"Here is the full app XML source:," +
+                $"{fullPageSource}\n\n" +
+                $" I need to find the XPath locator for the button or input field according to the X and Y cordinate>>: '\n" +
+                $"the X cordinate:{x}', the Y cordinate: {y}\n\n" +
+                $"Please return only xpath without any other text",
+                OpenAiService.AiRequestType.MobileXyCordinateRequest);
+            bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);
+            if (isLocatorValid)
+            {
+                return responceLocatorFromAi;
+            }
+            else
+            {
+                // If the locator is not valid, you can handle it here
+                Console.WriteLine($"Invalid XPath locator: {responceLocatorFromAi}");
+                return string.Empty; // or throw an exception, or return a default value
+            }
         }
         public static bool IsLocatorIsVald(string locator)
         {

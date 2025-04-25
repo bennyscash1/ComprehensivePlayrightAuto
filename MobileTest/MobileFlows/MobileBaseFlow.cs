@@ -4,6 +4,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Mac;
+using OpenQA.Selenium.DevTools.V117.Security;
 using SafeCash.Test.ApiTest.InternalApiTest.Buyer;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             string fullPageSource = appiumDriver.PageSource;
             return fullPageSource;
         }
+        #region Talk with ai by text
         public async Task TalkWithApp(string elementView, string inputText ="")
         {
             By? element = await GetAiElementLocator(elementView);
@@ -58,7 +60,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             while (retry < 2)
             {
-                locator = await aiService.GetLocatorFromAndroidSourcePage(fullPageSource, elementView);
+                locator = await aiService.GetAndroidLocatorFromUserTextInput(fullPageSource, elementView);
                 //Test if the locator valid, of no send it again to the ai
                 if (AndroidAiService.IsLocatorIsVald(locator))
                     return By.XPath(locator);
@@ -68,22 +70,53 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             Console.WriteLine($"[AI] Could not resolve a valid locator for '{elementView}'. Last attempt: {locator}");
             return null;
         }
-        public MobileBaseFlow ClickOnXyUsingFile(string filePath)
+        #endregion
+
+        #region Click on Xy cordinate
+
+        public async Task ClickOnXyUsingFile(string fileCordinatePath)
         {
+            string fullPageSource = GetFullPageSource();
+
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
-            var tapPoints = RecordLocatoreService.ExtractTouchCoordinates(filePath);
+            string screenSize = RecordLocatoreService.GetDeviceScreenSizeString();
+            var tapPoints = RecordLocatoreService.ExtractTouchCoordinates(fileCordinatePath);
+
             foreach (var (x, y) in tapPoints)
             {
-                mobileBasePages.AdbTap(x, y);
-            }
-            return this;
-        }
-        public MobileBaseFlow ClickONXy(int x, int y )
-        {
-            mobileBasePages.AdbTap(x, y);
-            return this;
+                By? aiElement = await GetAiElementLocatorFromXy(fullPageSource,
+                    x,y,screenSize);
 
+                mobileBasePages.MobileClickElement(aiElement);
+
+                //mobileBasePages.AdbTap(x, y);
+            }
         }
+        private async Task<By?> GetAiElementLocatorFromXy(string fullSizeScreen,
+            int x, int y, string screenSize)
+        {
+            mobileBasePages.WaitForPageToLoad();
+            string fullPageSource = GetFullPageSource();
+            var aiService = new AndroidAiService();
+
+            string locator = "";
+            int retry = 0;
+
+            while (retry < 2)
+            {
+                locator = await aiService.GetAndroidLocatorFromUserXyCordinate(fullSizeScreen,
+                    x, y, screenSize);
+                //Test if the locator valid, of no send it again to the ai
+                if (AndroidAiService.IsLocatorIsVald(locator))
+                    return By.XPath(locator);
+                retry++;
+            }
+
+            Console.WriteLine($"[AI] Could not resolve a valid locator for x:'{ x} and y: {y}'cordinate." +
+                $" Last attempt: {locator}");
+            return null;
+        }
+        #endregion
 
     }
 }
