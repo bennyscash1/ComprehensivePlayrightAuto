@@ -17,6 +17,8 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
         Category(TestLevel.Level_1)]
     public class MobileRecordAndPlay
     {
+        static string runingApp = "Calculator";
+
         [SetUp]
         public async Task SetupMobileRecodr()
         {
@@ -30,10 +32,12 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
         [Test]
         public async Task _MobileRecordAndPlay()
         {
-            MobileAiDriverFactory mobileRecordDriver = new MobileAiDriverFactory("Calculator");
-
+            #region Open recording session
+            MobileAiDriverFactory mobileRecordDriver = new MobileAiDriverFactory(runingApp);
             MobileBaseFlow mobileRecordFlow = new MobileBaseFlow(mobileRecordDriver.appiumDriver);
+            #endregion
 
+            #region Get recording into file
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
             string recordFile = recordLocatoreService.CreateRecordFile();
 
@@ -41,16 +45,14 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
 
             Thread.Sleep(3000);
             recordLocatoreService.StopAdbRecording(proccess);
+            #endregion
 
-            MobileEmulatorMenegar mobileDevicesMenegar = new MobileEmulatorMenegar();
-            mobileDevicesMenegar.EnsureEmulatorRunning("Pixel_2_API_35");
-            AppiumMenegar appiumMenegar = new AppiumMenegar();
-            await appiumMenegar.RunAppiumServer();
-
-            MobileAiDriverFactory mobileRunDriver = new MobileAiDriverFactory("Calculator");
+            #region Get touch coordinates
+            MobileAiDriverFactory mobileRunDriver = new MobileAiDriverFactory(runingApp);
 
             MobileBaseFlow mobileRunFlow = new MobileBaseFlow(mobileRunDriver.appiumDriver);
             mobileRunFlow.ClickOnXyUsingFile(recordFile);
+            #endregion
 
         }
     }
