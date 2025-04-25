@@ -22,18 +22,28 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             return Path.Combine(chromeGeneralPath, fileName);
         }
-        public static string GetDevicesSize()
+        public static (int x, int y) GetDevicesSize()
         {
             string? screenSizeLine = RunShell("adb shell wm size")
                 .Split('\n')
                 .FirstOrDefault(x => x.Contains("Physical size"));
+
             if (screenSizeLine == null)
                 throw new Exception("Unable to get device screen size.");
-            return screenSizeLine.Trim();
+
+            // Extract "1080x1920" from "Physical size: 1080x1920"
+            string sizePart = screenSizeLine.Split(":")[1].Trim();
+            var parts = sizePart.Split("x");
+
+            int width = int.Parse(parts[0]);
+            int height = int.Parse(parts[1]);
+
+            return (width, height);
         }
+
         public Process StartAdbRecordingToFile(string fullFilePath)
         {
-            string? screenSizeLine = GetDevicesSize();
+            (int deviceX, int deviceY) screenSizeLine = GetDevicesSize();
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -52,8 +62,8 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             Task.Run(async () =>
             {
                 using var writer = new StreamWriter(fullFilePath);
-                if (!string.IsNullOrEmpty(screenSizeLine))
-                    await writer.WriteLineAsync($"{screenHandler} " + screenSizeLine.Trim());
+                if (!string.IsNullOrEmpty(screenSizeLine.deviceX.ToString()))
+                    await writer.WriteLineAsync($"{screenHandler} Physical size: {screenSizeLine.deviceX}x{screenSizeLine.deviceY}");
 
                 while (!process.StandardOutput.EndOfStream)
                 {
@@ -102,18 +112,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
         public static List<(int x, int y)> ExtractTouchCoordinates(string eventFilePath)
         {
             var allLines = File.ReadAllLines(eventFilePath).ToList();
-            var screenLine = allLines.FirstOrDefault(l => l.StartsWith(screenHandler));
+            var screenLine = allLines.FirstOrDefault(l => l.StartsWith("#SCREEN"));
             if (screenLine == null)
                 throw new Exception("Missing screen size in recording file.");
 
-            // Extract recorded screen size
-            var meta = screenLine.Split(":")[1].Trim();
-            var originalParts = meta.Split("x");
-            int recordedWidth = int.Parse(originalParts[0]);
-            int recordedHeight = int.Parse(originalParts[1]);
-
-            string? devieRuningSize = GetDevicesSize();
-            // Remove the metadata line so the rest is only event lines
+            // Remove metadata line from touch events
             allLines.Remove(screenLine);
 
             // Get current device screen size via adb
@@ -123,9 +126,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             int currentWidth = int.Parse(currentParts[0]);
             int currentHeight = int.Parse(currentParts[1]);
 
-            double widthRatio = (double)currentWidth / recordedWidth;
-            double heightRatio = (double)currentHeight / recordedHeight;
-
             const int maxRaw = 32768;
             var coordinates = new List<(int x, int y)>();
 
@@ -133,15 +133,15 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             foreach (var line in allLines)
             {
-                if (line.Contains("0035")) // X
+                if (line.Contains("0035"))
                     rawX = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
-                else if (line.Contains("0036")) // Y
+                else if (line.Contains("0036"))
                     rawY = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
 
                 if (rawX.HasValue && rawY.HasValue)
                 {
-                    int scaledX = (int)((rawX.Value * recordedWidth / maxRaw) * widthRatio);
-                    int scaledY = (int)((rawY.Value * recordedHeight / maxRaw) * heightRatio);
+                    int scaledX = rawX.Value * currentWidth / maxRaw;
+                    int scaledY = rawY.Value * currentHeight / maxRaw;
                     coordinates.Add((scaledX, scaledY));
                     rawX = rawY = null;
                 }
@@ -149,5 +149,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             return coordinates;
         }
+
+
     }
 }
