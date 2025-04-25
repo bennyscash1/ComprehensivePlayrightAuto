@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
+{
+    public class RecordLocatoreService
+    {
+        public static string screenHandler = "#SCREEN";
+        public string CreateRecordFile(string fileName = "")
+        {
+            string chromeGeneralPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "RecordLocators", "LocatorsFiles");
+            Directory.CreateDirectory(chromeGeneralPath);
+
+            if (string.IsNullOrEmpty(fileName))
+                fileName = Guid.NewGuid().ToString() + ".txt";
+            else
+                fileName = fileName + ".txt";
+
+            return Path.Combine(chromeGeneralPath, fileName);
+        }
+        public static string GetDevicesSize()
+        {
+            string? screenSizeLine = RunShell("adb shell wm size")
+                .Split('\n')
+                .FirstOrDefault(x => x.Contains("Physical size"));
+            if (screenSizeLine == null)
+                throw new Exception("Unable to get device screen size.");
+            return screenSizeLine.Trim();
+        }
+        public Process StartAdbRecordingToFile(string fullFilePath)
+        {
+            string? screenSizeLine = GetDevicesSize();
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "adb",
+                    Arguments = "shell getevent -t",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+
+            Task.Run(async () =>
+            {
+                using var writer = new StreamWriter(fullFilePath);
+                if (!string.IsNullOrEmpty(screenSizeLine))
+                    await writer.WriteLineAsync($"{screenHandler} " + screenSizeLine.Trim());
+
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    var line = await process.StandardOutput.ReadLineAsync();
+                    if (line != null)
+                        await writer.WriteLineAsync(line);
+                }
+            });
+
+            return process;
+        }
+
+        private static string RunShell(string cmd)
+        {
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/C {cmd}",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            proc.Start();
+            string output = proc.StandardOutput.ReadToEnd();
+            proc.WaitForExit();
+            return output;
+        }
+
+        public void StopAdbRecording(Process process)
+        {
+            if (process != null && !process.HasExited)
+            {
+                Thread.Sleep(500); // wait for I/O flush (you can bump this if needed)
+
+                process.Kill();
+                Thread.Sleep(1000); // wait for I/O flush (you can bump this if needed)
+                process.Dispose();
+            }
+        }
+
+
+        public static List<(int x, int y)> ExtractTouchCoordinates(string eventFilePath)
+        {
+            var allLines = File.ReadAllLines(eventFilePath).ToList();
+            var screenLine = allLines.FirstOrDefault(l => l.StartsWith(screenHandler));
+            if (screenLine == null)
+                throw new Exception("Missing screen size in recording file.");
+
+            // Extract recorded screen size
+            var meta = screenLine.Split(":")[1].Trim();
+            var originalParts = meta.Split("x");
+            int recordedWidth = int.Parse(originalParts[0]);
+            int recordedHeight = int.Parse(originalParts[1]);
+
+            string? devieRuningSize = GetDevicesSize();
+            // Remove the metadata line so the rest is only event lines
+            allLines.Remove(screenLine);
+
+            // Get current device screen size via adb
+            var output = RunShell("adb shell wm size");
+            var currentLine = output.Split('\n').FirstOrDefault(x => x.Contains("Physical size"));
+            var currentParts = currentLine.Split(":")[1].Trim().Split("x");
+            int currentWidth = int.Parse(currentParts[0]);
+            int currentHeight = int.Parse(currentParts[1]);
+
+            double widthRatio = (double)currentWidth / recordedWidth;
+            double heightRatio = (double)currentHeight / recordedHeight;
+
+            const int maxRaw = 32768;
+            var coordinates = new List<(int x, int y)>();
+
+            int? rawX = null, rawY = null;
+
+            foreach (var line in allLines)
+            {
+                if (line.Contains("0035")) // X
+                    rawX = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
+                else if (line.Contains("0036")) // Y
+                    rawY = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
+
+                if (rawX.HasValue && rawY.HasValue)
+                {
+                    int scaledX = (int)((rawX.Value * recordedWidth / maxRaw) * widthRatio);
+                    int scaledY = (int)((rawY.Value * recordedHeight / maxRaw) * heightRatio);
+                    coordinates.Add((scaledX, scaledY));
+                    rawX = rawY = null;
+                }
+            }
+
+            return coordinates;
+        }
+    }
+}

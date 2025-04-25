@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using OpenQA.Selenium.Interactions;
+using System.Diagnostics;
 
 namespace ComprehensiveAutomation.MobileTest.InitalMobile
 {
@@ -156,5 +158,49 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
             touchAction.Press(screenWidth / 2, screenHeight - 10).Release().Perform();
 
         }
+
+        public MobileBaseFunction ScrollDown()
+        {
+            Thread.Sleep(1000);
+            int startX = 500; // X coordinate to start the swipe
+            int startY = 1800; // Y coordinate to start the swipe (bottom of the screen)
+            int endX = 500; // X coordinate to end the swipe
+            int endY = 100;
+            TouchAction touchAction = new TouchAction(appiumChromeDriver);
+            touchAction.Press(startX, startY).Wait(1000).MoveTo(endX, endY).Release().Perform();
+            return this;
+        }
+ 
+        #region X and y 
+        public void MobileClickLocatorXy(int x, int y)
+        {
+            var touchDevice = new PointerInputDevice(PointerKind.Touch);
+            var sequence = new ActionSequence(touchDevice, 0);
+
+            sequence.AddAction(touchDevice.CreatePointerMove(CoordinateOrigin.Viewport, x, y, TimeSpan.Zero));
+            sequence.AddAction(touchDevice.CreatePointerDown(0)); // 0 = primary touch
+            sequence.AddAction(touchDevice.CreatePointerUp(0));
+
+            appiumDriver.PerformActions(new List<ActionSequence> { sequence });
+        }
+        public void AdbTap(int x, int y)
+        {
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "adb",
+                    Arguments = $"shell input tap {x} {y}",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            proc.Start();
+            proc.WaitForExit();
+        }
+
+
+
+        #endregion
     }
 }

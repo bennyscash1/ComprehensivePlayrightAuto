@@ -1,4 +1,5 @@
 ﻿using ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject;
+using ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
@@ -45,12 +46,6 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
         }
 
-/*        public async Task InputAiElement(string elementView, string inputText)
-        {
-            By? element = await GetAiElementLocator(elementView);
-            Assert.That(element != null, $"The element for view '{elementView}' was not found by AI.");
-
-        }*/
 
         private async Task<By?> GetAiElementLocator(string elementView)
         {
@@ -72,6 +67,22 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             Console.WriteLine($"[AI] Could not resolve a valid locator for '{elementView}'. Last attempt: {locator}");
             return null;
+        }
+        public MobileBaseFlow ClickOnXyUsingFile(string filePath)
+        {
+            RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
+            var tapPoints = RecordLocatoreService.ExtractTouchCoordinates(filePath);
+            foreach (var (x, y) in tapPoints)
+            {
+                mobileBasePages.AdbTap(x, y);
+            }
+            return this;
+        }
+        public MobileBaseFlow ClickONXy(int x, int y )
+        {
+            mobileBasePages.AdbTap(x, y);
+            return this;
+
         }
 
     }

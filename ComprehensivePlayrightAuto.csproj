@@ -13,13 +13,10 @@
 
   <ItemGroup>
     <Compile Remove="Infra\Data\**" />
-    <Compile Remove="MobileTest\MobileServices\NewFolder\**" />
     <Compile Remove="Properties\**" />
     <EmbeddedResource Remove="Infra\Data\**" />
-    <EmbeddedResource Remove="MobileTest\MobileServices\NewFolder\**" />
     <EmbeddedResource Remove="Properties\**" />
     <None Remove="Infra\Data\**" />
-    <None Remove="MobileTest\MobileServices\NewFolder\**" />
     <None Remove="Properties\**" />
   </ItemGroup>
 
@@ -89,6 +86,12 @@
 		<None Update="MobileTest\mobileServices\emulator\**\*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Update="MobileTest\MobileServices\RecordLocators\LocatorsFiles\LocatorEmptyFile.cs">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Compile>
 	</ItemGroup>
 
 </Project>
