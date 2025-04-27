@@ -125,12 +125,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             allLines.Remove(screenLine);
 
             // Get current device screen size via adb
-            var output = RunShell("adb shell wm size");
-            var currentLine = output.Split('\n').FirstOrDefault(x => x.Contains("Physical size"));
-            var currentParts = currentLine.Split(":")[1].Trim().Split("x");
-            int currentWidth = int.Parse(currentParts[0]);
-            int currentHeight = int.Parse(currentParts[1]);
-
+            (int currentWidth, int currentHeight) = GetDevicesSize();
             const int maxRaw = 32768;
             var coordinates = new List<(int x, int y)>();
 

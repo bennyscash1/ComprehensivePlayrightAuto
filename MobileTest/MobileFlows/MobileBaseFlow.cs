@@ -84,12 +84,12 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             foreach (var (x, y) in tapPoints)
             {
-                By? aiElement = await GetAiElementLocatorFromXy(fullPageSource,
+                /*By? aiElement = await GetAiElementLocatorFromXy(fullPageSource,
                     x,y,screenSize);
 
-                mobileBasePages.MobileClickElement(aiElement);
+                mobileBasePages.MobileClickElement(aiElement);*/
 
-                //mobileBasePages.AdbTap(x, y);
+                mobileBasePages.AdbTap(x, y);
             }
         }
         private async Task<By?> GetAiElementLocatorFromXy(string fullSizeScreen,
