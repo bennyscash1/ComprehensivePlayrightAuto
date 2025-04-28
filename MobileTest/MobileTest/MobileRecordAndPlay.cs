@@ -18,7 +18,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
         Category(TestLevel.Level_1)]
     public class MobileRecordAndPlay
     {
-        static string runingApp = "Calculator";
+        static string runingApp = "Chrome";
 
         [SetUp]
         public async Task SetupMobileRecodr()

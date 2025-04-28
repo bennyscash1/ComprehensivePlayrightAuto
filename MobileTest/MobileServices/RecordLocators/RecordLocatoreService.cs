@@ -127,6 +127,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             int? rawX = null, rawY = null;
             bool touchStarted = false;
+            bool coordinateCaptured = false;
 
             const int maxRawX = 4095;
             const int maxRawY = 4095;
@@ -138,15 +139,17 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
                     if (line.Contains("ffffffff"))
                     {
                         touchStarted = false;
+                        coordinateCaptured = false;
                     }
                     else
                     {
                         touchStarted = true;
+                        coordinateCaptured = false;
                         rawX = rawY = null;
                     }
                 }
 
-                if (!touchStarted)
+                if (!touchStarted || coordinateCaptured)
                     continue;
 
                 if (line.Contains("0035"))
@@ -161,11 +164,13 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
                     int scaledY = rawY.Value * currentHeight / maxRawY;
                     coordinates.Add((scaledX, scaledY));
                     rawX = rawY = null;
+                    coordinateCaptured = true; // capture only once per touch
                 }
             }
 
             return coordinates;
         }
+
 
 
 
