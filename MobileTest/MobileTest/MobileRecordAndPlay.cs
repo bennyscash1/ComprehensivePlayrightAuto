@@ -5,6 +5,7 @@ using ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,10 +42,10 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
             string recordFile = recordLocatoreService.CreateRecordFile();
 
-            var proccess = recordLocatoreService.StartAdbRecordingToFile(recordFile);
+            Process recordProccess = recordLocatoreService.StartAdbRecordingToFile(recordFile);
 
             Thread.Sleep(1000);
-            recordLocatoreService.StopAdbRecording(proccess);
+            recordLocatoreService.StopAdbRecording(recordProccess);
             #endregion
 
             #region Get touch coordinates
