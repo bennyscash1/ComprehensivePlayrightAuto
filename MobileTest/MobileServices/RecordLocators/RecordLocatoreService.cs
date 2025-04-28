@@ -113,7 +113,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             }
         }
 
-
         public static List<(int x, int y)> ExtractTouchCoordinates(string eventFilePath)
         {
             var allLines = File.ReadAllLines(eventFilePath).ToList();
@@ -121,33 +120,55 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             if (screenLine == null)
                 throw new Exception("Missing screen size in recording file.");
 
-            // Remove metadata line from touch events
             allLines.Remove(screenLine);
 
-            // Get current device screen size via adb
             (int currentWidth, int currentHeight) = GetDevicesSize();
-            const int maxRaw = 32768;
             var coordinates = new List<(int x, int y)>();
 
             int? rawX = null, rawY = null;
+            bool touchStarted = false;
+
+            const int maxRawX = 4095;
+            const int maxRawY = 4095;
 
             foreach (var line in allLines)
             {
+                if (line.Contains("0039"))
+                {
+                    if (line.Contains("ffffffff"))
+                    {
+                        touchStarted = false;
+                    }
+                    else
+                    {
+                        touchStarted = true;
+                        rawX = rawY = null;
+                    }
+                }
+
+                if (!touchStarted)
+                    continue;
+
                 if (line.Contains("0035"))
                     rawX = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
-                else if (line.Contains("0036"))
+
+                if (line.Contains("0036"))
                     rawY = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
 
                 if (rawX.HasValue && rawY.HasValue)
                 {
-                    int scaledX = rawX.Value * currentWidth / maxRaw;
-                    int scaledY = rawY.Value * currentHeight / maxRaw;
+                    int scaledX = rawX.Value * currentWidth / maxRawX;
+                    int scaledY = rawY.Value * currentHeight / maxRawY;
                     coordinates.Add((scaledX, scaledY));
                     rawX = rawY = null;
                 }
             }
+
             return coordinates;
         }
+
+
+
 
 
     }
