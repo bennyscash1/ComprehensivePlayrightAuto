@@ -146,7 +146,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
                     rawX = rawY = null;
                 }
             }
-
             return coordinates;
         }
 
