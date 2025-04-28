@@ -227,5 +227,40 @@ namespace ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileServic
         }
 
         #endregion
+
+        #region Test if the app is emlulator
+        public static bool IsRuningDeviceEmulator()
+        {
+            try
+            {
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "adb",
+                        Arguments = "shell getprop ro.product.model",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                output = output.ToLowerInvariant();
+
+                // Common emulator model names: 'sdk', 'emulator', 'generic'
+                return output.Contains("sdk") || output.Contains("emulator") || output.Contains("generic");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        #endregion
+
     }
 }

@@ -11,14 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 
-namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
+namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.RecordAndPlay
 {
     [TestFixture, Category(
     Categories.MobileAndroid),
         Category(TestLevel.Level_1)]
     public class MobileRecordAndPlay
     {
-        static string runingApp = "Chrome";
+        static string runingApp = "Calculator";
 
         [SetUp]
         public async Task SetupMobileRecodr()
@@ -54,7 +54,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
 
             await mobileRecordFlowx.ClickOnXyUsingFile(recordFile);
             #endregion
-
         }
     }
 }

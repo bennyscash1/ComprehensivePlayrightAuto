@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileService;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -20,6 +21,13 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
             else
                 fileName = fileName + ".txt";
 
+            return Path.Combine(chromeGeneralPath, fileName);
+        }
+        public static string GetRecordFileFullPath(string fileName)
+        {
+            string chromeGeneralPath = Path.Combine(Directory.GetCurrentDirectory(), "MobileTest", "MobileServices", "RecordLocators", "LocatorsFiles");
+            Directory.CreateDirectory(chromeGeneralPath);
+            fileName = fileName + ".txt";
             return Path.Combine(chromeGeneralPath, fileName);
         }
         public static (int x, int y) GetDevicesSize()
@@ -112,8 +120,23 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
                 process.Dispose();
             }
         }
-
+      
         public static List<(int x, int y)> ExtractTouchCoordinates(string eventFilePath)
+        {
+            
+            bool isDeviceEmulator = MobileEmulatorMenegar.IsRuningDeviceEmulator();
+            if (isDeviceEmulator)
+            {
+                var coordinates = ExtractTouchCoordinatesForEmulator(eventFilePath);
+                return coordinates;
+            }
+            else
+            {
+                var coordinates = ExtractTouchCoordinatesForRealDevice(eventFilePath);
+                return coordinates;
+            }
+        }
+        public static List<(int x, int y)> ExtractTouchCoordinatesForRealDevice(string eventFilePath)
         {
             var allLines = File.ReadAllLines(eventFilePath).ToList();
             var screenLine = allLines.FirstOrDefault(l => l.StartsWith("#SCREEN"));
@@ -170,6 +193,67 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileServices.RecordLocators
 
             return coordinates;
         }
+
+        public static List<(int x, int y)> ExtractTouchCoordinatesForEmulator(string eventFilePath)
+        {
+            var allLines = File.ReadAllLines(eventFilePath).ToList();
+
+            (int currentWidth, int currentHeight) = GetDevicesSize();
+            var coordinates = new List<(int x, int y)>();
+
+            int? rawX = null, rawY = null;
+            bool touchStarted = false;
+            bool coordinateCaptured = false;
+
+            // Set assumed max raw touch range
+            const int maxRaw = 32768; // << This is the real missing thing!
+
+            foreach (var line in allLines)
+            {
+                if (line.Contains("0039"))
+                {
+                    if (line.Contains("ffffffff"))
+                    {
+                        touchStarted = false;
+                        coordinateCaptured = false;
+                    }
+                    else
+                    {
+                        touchStarted = true;
+                        coordinateCaptured = false;
+                        rawX = rawY = null;
+                    }
+                }
+
+                if (!touchStarted || coordinateCaptured)
+                    continue;
+
+                if (line.Contains("0035"))
+                    rawX = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
+
+                if (line.Contains("0036"))
+                    rawY = Convert.ToInt32(line.Trim().Split(' ').Last(), 16);
+
+                if (rawX.HasValue && rawY.HasValue)
+                {
+                    int scaledX = rawX.Value * currentWidth / maxRaw;
+                    int scaledY = rawY.Value * currentHeight / maxRaw;
+                    coordinates.Add((scaledX, scaledY));
+                    rawX = rawY = null;
+                    coordinateCaptured = true;
+                }
+            }
+
+            return coordinates;
+        }
+
+
+
+
+
+
+
+
 
 
 

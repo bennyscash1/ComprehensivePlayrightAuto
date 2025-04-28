@@ -76,9 +76,6 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
         public async Task ClickOnXyUsingFile(string fileCordinatePath)
         {
-
-            string fullPageSource = GetFullPageSource();
-
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
             string screenSize = RecordLocatoreService.GetDeviceScreenSizeString();
             var tapPoints = RecordLocatoreService.ExtractTouchCoordinates(fileCordinatePath);

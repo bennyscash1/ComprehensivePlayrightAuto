@@ -98,6 +98,8 @@ namespace ComprehensiveAutomation.Test.Infra.BaseTest
         {
             //Test level
             public const string Level_1 = nameof(Level_1);
+            public const string Level_2 = nameof(Level_2);
+            public const string Level_3 = nameof(Level_3);
           
 
         }
