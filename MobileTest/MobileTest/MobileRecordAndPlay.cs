@@ -49,8 +49,10 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest
             #endregion
 
             #region Get touch coordinates
+            MobileAiDriverFactory mobileRecordDriverx = new MobileAiDriverFactory(runingApp);
+            MobileBaseFlow mobileRecordFlowx = new MobileBaseFlow(mobileRecordDriverx.appiumDriver);
 
-            await mobileRecordFlow.ClickOnXyUsingFile(recordFile);
+            await mobileRecordFlowx.ClickOnXyUsingFile(recordFile);
             #endregion
 
         }

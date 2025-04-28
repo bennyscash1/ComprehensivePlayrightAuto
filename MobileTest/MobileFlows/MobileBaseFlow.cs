@@ -76,6 +76,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
         public async Task ClickOnXyUsingFile(string fileCordinatePath)
         {
+
             string fullPageSource = GetFullPageSource();
 
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
@@ -84,12 +85,12 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             foreach (var (x, y) in tapPoints)
             {
+                mobileBasePages.WaitForPageToLoad();
+                mobileBasePages.AdbTap(x, y);
                 /*By? aiElement = await GetAiElementLocatorFromXy(fullPageSource,
                     x,y,screenSize);
 
                 mobileBasePages.MobileClickElement(aiElement);*/
-
-                mobileBasePages.AdbTap(x, y);
             }
         }
         private async Task<By?> GetAiElementLocatorFromXy(string fullSizeScreen,
