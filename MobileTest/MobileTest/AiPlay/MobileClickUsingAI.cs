@@ -10,14 +10,14 @@ using NUnit.Framework;
 using OpenQA.Selenium.DevTools.V117.Runtime;
 using ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileService;
 
-namespace ComprehensiveAutomation.MobileTest.MobileTest
+namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
 {
     [TestFixture, Category(
         Categories.MobileAndroid),
     Category(TestLevel.Level_1)]
-    public class MobileClickUsingAI 
+    public class MobileClickUsingAI
     {
-        //string appName = MobileEmulatorMenegar.GetForegroundAppPackage();
+        static string runingApp = "Calculator";
 
         [SetUp]
         public async Task SetupMobileDevice()
@@ -27,10 +27,10 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             AppiumMenegar appiumMenegar = new AppiumMenegar();
             await appiumMenegar.RunAppiumServer();
         }
-        [Test] 
+        [Test]
         public async Task _MobileClickUsingAI()
         {
-            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory("Calculator");
+            MobileAiDriverFactory mobileDriver = new MobileAiDriverFactory(runingApp);
             MobileBaseFlow mobileFlow = new MobileBaseFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
@@ -39,10 +39,6 @@ namespace ComprehensiveAutomation.MobileTest.MobileTest
             await mobileFlow.TalkWithApp("Click on number 8");
             await mobileFlow.TalkWithApp("Click on =");
         }
-
-
-
-
 
 
 

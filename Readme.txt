@@ -13,6 +13,11 @@ Run via command line
 
 
 Mobile:
+Run via command line
+OPen command>>:
+dotnet test --filter "Category=MobileAndroid&Category=Level_1"
+
+
 Open any app in your mobile once it with adb and run>:
 adb shell dumpsys window | findstr "mCurrentFocus"
 

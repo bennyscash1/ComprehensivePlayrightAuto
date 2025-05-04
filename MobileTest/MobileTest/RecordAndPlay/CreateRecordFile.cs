@@ -18,8 +18,8 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.RecordAndPlay
              Category(TestLevel.Level_2)]
     public class CreateRecordFile
     {
-        static string runingApp = "Chrome";
-        public static string recordFileName = "chromeFlow1";
+        public static string runingApp = "staging";
+        public static string recordFileName = "ChangeEnviorment";
         [SetUp]
         public async Task _SetupMobile()
         {
@@ -47,8 +47,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.RecordAndPlay
             Thread.Sleep(1000);
             recordLocatoreService.StopAdbRecording(recordProccess);
             #endregion
-
-
         }
     }
 }
