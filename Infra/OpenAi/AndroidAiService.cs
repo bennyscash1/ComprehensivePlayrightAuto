@@ -104,11 +104,13 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
         {
             OpenAiService openAiService = new OpenAiService();
             string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
-                $"Here is the full app XML source:," +
+                $"You are an AI agent navigating inside a mobile app.\n" +
+                $"Below is the current screen XML and the user’s goal.\n" +
+                $"Your task is to analyze the screen and return the next best action that will bring the user one step closer to the goal.\n\n" +
+                $"Here is the full app XML source:\n" +
                 $"{fullPageSource}\n\n" +
-                $" I need you to promot me to the next task according to this user task>>: '\n" +
-                $"{userEndGoalMission}'\n\n" +
-                $"Please return me valid json accordign to the system prompt",
+                $"User goal:\n{userEndGoalMission}\n\n" +
+                $"Please return only a single valid JSON object (no markdown or formatting), according to the system prompt you received.\n\n",
                 OpenAiService.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
             bool isLocatorValid = isAiReturnValidJson(responceLocatorFromAi);
             if (isLocatorValid)
