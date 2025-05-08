@@ -73,7 +73,6 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         #endregion
 
         #region Click on Xy cordinate
-
         public async Task ClickOnXyUsingFile(string fileCordinatePath)
         {
             RecordLocatoreService recordLocatoreService = new RecordLocatoreService();
@@ -84,10 +83,6 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             {
                 mobileBasePages.WaitForPageToLoad();
                 mobileBasePages.AdbTap(x, y);
-                /*By? aiElement = await GetAiElementLocatorFromXy(fullPageSource,
-                    x,y,screenSize);
-
-                mobileBasePages.MobileClickElement(aiElement);*/
             }
         }
         private async Task<By?> GetAiElementLocatorFromXy(string fullSizeScreen,

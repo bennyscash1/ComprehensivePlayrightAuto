@@ -1,15 +1,19 @@
 ﻿using Newtonsoft.Json;
 using OpenAI.Chat;
+using System.Text.Json;
+using System.Text;
 
 namespace SafeCash.Test.ApiTest.Integration.OpenAi
 {
     public class OpenAiService
     {
         public static string openAiModel = "gpt-4o-mini";
-        public enum AiRequestType
+        #region SystemPrompt
+        public enum SystemPromptTypeEnum
         {
             ApiRequest,
             MobileTextInpueRequest,
+            MobileSystemPromptMissionTask,
             MobileXyCordinateRequest,
             ImagesCompare
         }
@@ -75,11 +79,75 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             " - Y must be >= top and < bottom.\n   " +
             "- No partial matches are allowed.\n   " +
             "- Ignore elements where X and Y are not fully contained inside bounds.\n";
+        string aiSystemPromptMissionTask = "You are an intelligent navigation agent inside a mobile application.\n\n" +
+        "Your goal is to analyze each screen of the app (given as an Android XML UI hierarchy) and guide the user step-by-step toward reaching the desired page or performing the requested action.\n\n" +
+        "Input:\n" +
+        "1. xmlHierarchy: A full Android XML hierarchy string representing the current screen.\n" +
+        "2. userGoal: A free-text description of the screen the user wants to reach or the action they want to complete (e.g., 'Navigate to the search page and enter Hello World').\n\n" +
+        "Process:\n" +
+        "- Parse the XML structure.\n" +
+        "- Check if the current screen matches the goal (based on content, text, resource-id, or layout structure).\n" +
+        "  - If the goal has been reached: return { \"type\": 3 }\n" +
+        "- If the goal has not been reached:\n" +
+        "  - Identify the **shortest and most direct visible path** that will advance the user one step closer to the goal.\n" +
+        "  - **Always prefer skip, dismiss, continue, confirm, or acknowledge buttons** (e.g., 'Next', 'Got it', 'OK') over options like 'Settings', 'Customize', or other configuration pages, unless explicitly required to reach the goal.\n" +
+        "  - If the element is a button, return:\n" +
+        "    { \"type\": 1, \"xpath\": \"xpath of the element to click\" }\n" +
+        "  - If it's an input field, return:\n" +
+        "    { \"type\": 2, \"xpath\": \"xpath of the input field\", \"value\": \"value to input (from goal or generate a smart default)\" }\n" +
+        "- Only return **one step per response**. The loop will call you again with updated XML.\n" +
+        "- If there’s nothing reasonable to do, return:\n" +
+        "  { \"type\": 0 }\n\n" +
+        "Response format:\n" +
+        "1. Button to click:\n" +
+        "{ \"type\": 1, \"xpath\": \"xpath of the button\" }\n\n" +
+        "2. Input field to fill:\n" +
+        "{ \"type\": 2, \"xpath\": \"xpath of the input field\", \"value\": \"text to enter\" }\n\n" +
+        "3. Goal has been reached:\n" +
+        "{ \"type\": 3 }\n\n" +
+        "4. No idea how to proceed:\n" +
+        "{ \"type\": 0 }\n\n" +
+        "Notes:\n" +
+        "- Always choose the **fastest visible path** to the goal, minimizing unnecessary steps.\n" +
+        "- Be smart. Consider the intent behind the goal and choose actions that help achieve it efficiently.\n" +
+        "- Use text, content-desc, resource-id, and bounds to infer meaning and visibility.\n" +
+        "- Avoid suggesting invisible or disabled elements.\n" +
+        "- If multiple elements match, choose the one with the clearest and shortest intent toward the goal.\n" +
+        "- **Important: Do not wrap your response in markdown or code blocks. Return only the raw JSON object as text.**\n";
 
-        public async Task<string> OpenAiServiceRequest(string userPrompts, AiRequestType aiRequest)
+
+
+
+
+        public string GetSystemPrompt(SystemPromptTypeEnum aiRequest)
+        {
+            string prePrompt;
+            switch (aiRequest)
+            {
+                case SystemPromptTypeEnum.MobileTextInpueRequest:
+                    prePrompt = mobilePrePrompt;
+                    break;
+                case SystemPromptTypeEnum.MobileSystemPromptMissionTask:
+                    prePrompt = aiSystemPromptMissionTask;
+                    break;
+                case SystemPromptTypeEnum.MobileXyCordinateRequest:
+                    prePrompt = mobilePrePromptCordinateXy;
+                    break;
+
+                default:
+                    prePrompt = "You are an AI assistant."; // Default fallback
+                    break;
+            }
+            return prePrompt;
+        }
+        #endregion
+
+        #region OpenAiServiceRequest
+
+        public async Task<string> OpenAiServiceRequest(string userPrompts, SystemPromptTypeEnum systemPrompt)
         {
             string model = openAiModel;
-            string prePrompt = GetStockPrePromptPrompts(aiRequest);
+            string prePrompt = GetSystemPrompt(systemPrompt);
 
             string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("API key is missing from environment variables.");
             string apiResponce = "An error occurred or no response was returned.";
@@ -122,31 +190,103 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             return apiResponce;
         }
 
-        public string GetStockPrePromptPrompts(AiRequestType aiRequest)
+        #endregion
+
+        #region Grok ai request
+        public async Task<string> GrokRequestService(string userMessage, SystemPromptTypeEnum aiRequest)
         {
-            string prePrompt;
-            switch (aiRequest)
+            string grokUrl = "https://api.x.ai/v1/chat/completions";
+            string apiGrokKey = Environment.GetEnvironmentVariable("GROK_API_KEY") ?? throw new InvalidOperationException("API key is missing from environment variables.");
+
+            using (HttpClient client = new HttpClient())
             {
+                string aiPrePromptType = GetSystemPrompt(aiRequest);
 
-                case AiRequestType.MobileTextInpueRequest:
-                    prePrompt = mobilePrePrompt;
-                    break;
-                case AiRequestType.MobileXyCordinateRequest:
-                    prePrompt = mobilePrePromptCordinateXy;
-                    break;
-                /*                case AiPrePromptType.DataBaseAnalyst:
-                                    prePrompt = DataBaseAnalyst;
-                                    break;
-                                case AiPrePromptType.GetStockCompanysPrompts:
-                                    prePrompt = GetStockCompanysPrompts;
-                                    break;*/
-                default:
-                    prePrompt = "You are an AI assistant."; // Default fallback
-                    break;
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiGrokKey}");
+
+                var requestBody = new
+                {
+                    messages = new[]
+                    {
+                new { role = "system", content = aiPrePromptType },
+                new { role = "user", content = userMessage }
+                },
+                    model = "grok-3-mini-fast-latest",
+                    stream = false,
+                    temperature = 0
+                };
+
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(grokUrl, jsonContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    // ✅ Extract only the "content" field from the response
+                    using JsonDocument doc = JsonDocument.Parse(jsonResponse);
+
+                    if (doc.RootElement.TryGetProperty("choices", out JsonElement choicesArray) &&
+                        choicesArray.GetArrayLength() > 0 &&
+                        choicesArray[0].TryGetProperty("message", out JsonElement message) &&
+                        message.TryGetProperty("content", out JsonElement contentElement))
+                    {
+                        return contentElement.GetString() ?? "No content available.";
+                    }
+
+                    return "Invalid response format.";
+                }
+                else
+                {
+                    return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
+                }
             }
-            return prePrompt;
         }
+        #endregion
 
+        #region Deep seek ai request
+        private readonly HttpClient _httpClient = new HttpClient();
 
+        public async Task<string> DeepSeekResponceAi(string userPrompts, SystemPromptTypeEnum aiRequest)
+        {
+            string apiUrl = "https://api.deepseek.com/chat/completions"; // Replace with actual API URL
+            string bearerToken = "sk-5706d7050b8c4bddb967ba236538d89d"; // Replace with actual token
+            string prePrompt = GetSystemPrompt(aiRequest);
+            var requestBody = new
+            {
+                model = "deepseek-chat",
+                messages = new[]
+                {
+                new { role = "system", content = prePrompt },
+                new { role = "user", content = userPrompts }
+            },
+                stream = false
+            };
+
+            string jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json"); // ✅ "Content-Type" set correctly here
+
+            var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+            {
+                Content = content
+            };
+
+            request.Headers.Add("Authorization", $"Bearer {bearerToken}"); // ✅ Correct place for Authorization
+                                                                           // No need to add "Content-Type" again here
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            using JsonDocument doc = JsonDocument.Parse(jsonResponse);
+
+            string? contentResponce = doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            return contentResponce;
+        }
+        #endregion
     }
 }
