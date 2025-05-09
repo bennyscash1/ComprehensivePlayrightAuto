@@ -79,6 +79,8 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             " - Y must be >= top and < bottom.\n   " +
             "- No partial matches are allowed.\n   " +
             "- Ignore elements where X and Y are not fully contained inside bounds.\n";
+
+
         string aiSystemPromptMissionTask = "You are an intelligent navigation agent inside a mobile application.\n\n" +
         "Your goal is to analyze each screen of the app (given as an Android XML UI hierarchy) and guide the user step-by-step toward reaching the desired page or performing the requested action.\n\n" +
         "Input:\n" +
@@ -86,7 +88,8 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
         "2. userGoal: A free-text description of the screen the user wants to reach or the action they want to complete (e.g., 'Navigate to the search page and enter Hello World').\n\n" +
         "Process:\n" +
         "- Parse the XML structure.\n" +
-        "- Check if the current screen matches the goal (based on content, text, resource-id, or layout structure).\n" +
+        "- Check if the current screen fulfills the user's goal.\n" +
+        "  - For input tasks: if the expected value is already present in the input field **and** the UI shows matching suggestions, search results, or indications of progress — consider the goal complete.\n" +
         "  - If the goal has been reached: return { \"type\": 3 }\n" +
         "- If the goal has not been reached:\n" +
         "  - Identify the **shortest and most direct visible path** that will advance the user one step closer to the goal.\n" +
@@ -114,6 +117,7 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
         "- Avoid suggesting invisible or disabled elements.\n" +
         "- If multiple elements match, choose the one with the clearest and shortest intent toward the goal.\n" +
         "- **Important: Do not wrap your response in markdown or code blocks. Return only the raw JSON object as text.**\n";
+
 
 
 
