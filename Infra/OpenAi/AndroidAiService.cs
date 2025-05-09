@@ -100,7 +100,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
 
         #region Ai service for tasks 
         public async Task<string> GetAiResponedAsJson(
-           string fullPageSource, string userEndGoalMission)
+           string fullPageSource, string userEndGoalMission, string userUpdateOnFailedScenario ="")
         {
             OpenAiService openAiService = new OpenAiService();
             string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
@@ -110,7 +110,8 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 $"Here is the full app XML source:\n" +
                 $"{fullPageSource}\n\n" +
                 $"User goal:\n{userEndGoalMission}\n\n" +
-                $"Please return only a single valid JSON object (no markdown or formatting), according to the system prompt you received.\n\n",
+                $"Please return only a single valid JSON object (no markdown or formatting), according to the system prompt you received.\n\n" +
+                $"{userUpdateOnFailedScenario}",
                 OpenAiService.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
             bool isLocatorValid = isAiReturnValidJson(responceLocatorFromAi);
             if (isLocatorValid)

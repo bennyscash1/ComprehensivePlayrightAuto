@@ -14,39 +14,74 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             appiumDriver = i_driver;
             mobileDriverLocator = new MobileLoginPage(appiumDriver);
         }
-        public async Task HandleAiResponce(string userGoalMission)
+        public async Task <int> HandleAiResponce(string userGoalMission)
         {
-            #region Get full page and send to AI
-            var aiService = new AndroidAiService();     
-            #endregion
-
-            #region Habdle the json response according to the type
+            var aiService = new AndroidAiService();
             int aiResponceType = (int)aiResponceTypeEnum.ButtonLocator;
+            By? PreviosLocator = null;
 
             while (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator ||
-                  aiResponceType == (int)aiResponceTypeEnum.InputLocator)
+                   aiResponceType == (int)aiResponceTypeEnum.InputLocator)
             {
-                mobileDriverLocator.WaitForPageToLoad();
+                // mobileDriverLocator.WaitForPageToLoad();
                 string fullPageSource = GetFullPageSource();
-                string jsonResponce = await aiService
-                    .GetAiResponedAsJson(fullPageSource, userGoalMission);
-                aiResponceType = GetTypeFromJson(jsonResponce);
-                if (GetTypeFromJson(jsonResponce) == (int)aiResponceTypeEnum.ButtonLocator)
+                string jsonAiResponed = "";
+                if (PreviosLocator != null)
                 {
-                    string responceLocatorFromAi = GetXPathFromAiJson(jsonResponce);
-                    By aiJsonResponce = By.XPath(responceLocatorFromAi);
-                    mobileDriverLocator.MobileClickElement(aiJsonResponce);
+                    jsonAiResponed = await aiService.GetAiResponedAsJson(fullPageSource, userGoalMission,
+                        $"Important: the previous XPath locator that you already clicked on was - '{PreviosLocator}'");
                 }
-                if (GetTypeFromJson(jsonResponce) == (int)aiResponceTypeEnum.InputLocator)
+                else
                 {
-                    string responceLocatorFromAi = GetXPathFromAiJson(jsonResponce);
-                    string inputTextFromJson = GetTextInputValuFromJson(jsonResponce);
-                    By aiJsonResponce = By.XPath(responceLocatorFromAi);
-                    mobileDriverLocator.MobileInputTextToField(aiJsonResponce, inputTextFromJson);
+                    jsonAiResponed = await aiService.GetAiResponedAsJson(fullPageSource, userGoalMission);
+                }
+
+                aiResponceType = GetTypeFromJson(jsonAiResponed);
+
+                if (aiResponceType != (int)aiResponceTypeEnum.ButtonLocator &&
+                    aiResponceType != (int)aiResponceTypeEnum.InputLocator)
+                    break;
+
+                string? inputText = aiResponceType == (int)aiResponceTypeEnum.InputLocator
+                    ? GetTextInputValuFromJson(jsonAiResponed)
+                    : null;
+
+                By? locator = await RetryUntilElementFound(jsonAiResponed, fullPageSource, userGoalMission, aiService);
+                
+                if (locator == null)
+                     return aiResponceType = (int)aiResponceTypeEnum.AiStuckOrUnsure;
+                PreviosLocator = locator;
+                if (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator)
+                {
+                    mobileDriverLocator.MobileClickElement(locator);
+                }
+
+                else
+                {
+                    mobileDriverLocator.MobileInputTextToField(locator, inputText);
                 }
             }
-            #endregion
+            return aiResponceType;
         }
+
+        private async Task<By?> RetryUntilElementFound(string jsonResponse, string fullPageSource, string userGoal, AndroidAiService aiService)
+        {
+            By locator = GetXPathLocatorFromAiJson(jsonResponse);
+            By PreviosButtonClickLocator;
+            int retry = 0;
+            while (!mobileDriverLocator.IsHavyElementFount(locator) && retry < 3)
+            {
+                jsonResponse = await aiService.GetAiResponedAsJson(
+                    fullPageSource, userGoal, $"The element '{locator}' not on the page, please check again");
+
+                locator = GetXPathLocatorFromAiJson(jsonResponse);
+                PreviosButtonClickLocator = locator;
+                retry++;
+            }
+            //Do it so the ai will know the previos locator
+            return mobileDriverLocator.IsHavyElementFount(locator) ? locator : null;
+        }
+
 
 
 
@@ -73,12 +108,11 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             }
             catch (JsonException)
             {
-                // handle invalid JSON if needed
             }
 
-            return -1; // or throw exception or use nullable int if preferred
+            return -1; 
         }
-        public static string GetXPathFromAiJson(string json)
+        public static By GetXPathLocatorFromAiJson(string json)
         {
             try
             {
@@ -87,16 +121,20 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                     JsonElement root = doc.RootElement;
                     if (root.TryGetProperty("xpath", out JsonElement xpathElement) && xpathElement.ValueKind == JsonValueKind.String)
                     {
-                        return xpathElement.GetString();
+                        string xpath = xpathElement.GetString();
+                        if (!string.IsNullOrWhiteSpace(xpath))
+                        {
+                            return By.XPath(xpath);
+                        }
                     }
                 }
             }
             catch (JsonException)
             {
-                // handle invalid JSON if needed
+                // Optional: log error
             }
 
-            return null; // or throw exception if preferred
+            return null; // You can also throw an exception here if you prefer strict handling
         }
 
         public static string GetTextInputValuFromJson(string json)
@@ -120,5 +158,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             return null; // Or throw an exception if required
         }
+
+
     }
 }

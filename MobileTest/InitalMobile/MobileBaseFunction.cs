@@ -99,6 +99,32 @@ namespace ComprehensiveAutomation.MobileTest.InitalMobile
             var elementDetails = $"Element {el} sendkeys faild within {timeOutInSeconds} seconds.";
             Assert.That(elementClick, elementDetails);
         }
+        public bool IsHavyElementFount(By el)
+        {
+            WebDriverWait wait = new WebDriverWait(appiumDriver, timeOutInSeconds);
+            bool isElementFound = false;
+            try
+            {
+                wait.Until(driver =>
+                {
+                    try
+                    {
+                        var element = driver.FindElement(el);
+                        return element.Displayed && element.Enabled;
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        return false;
+                    }
+                });
+                isElementFound = true;
+            }
+            catch (WebDriverTimeoutException e)
+            {
+                isElementFound = false;
+            }
+            return isElementFound;
+        }
         public void WaitUntilMobilePageStable()
         {
             int attempt = 0;

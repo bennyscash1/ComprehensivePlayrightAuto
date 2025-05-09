@@ -17,7 +17,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
     Category(TestLevel.Level_1)]
     public class MobileAiTaskMission
     {
-        static string runingApp = "Chrome";
+        static string runingApp = "camera";
 
         [SetUp]
         public async Task SetupMobileDevice()
@@ -34,7 +34,8 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
             MobileAiTaskFlow mobileTaskFlow = new MobileAiTaskFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-            await mobileTaskFlow.HandleAiResponce("I want you to navigate to the search page and enter Hellow World");
+            int type=  await mobileTaskFlow.HandleAiResponce("Take image, then navigate to video mode," +
+                "and click on Starting video recording");
         }
 
     }
