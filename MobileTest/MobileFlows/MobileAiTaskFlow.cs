@@ -16,7 +16,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         }
         List<By> PreviosLocator;
         By? currentAiLocator;
-        public async Task <int> HandleAiResponce(string userGoalMission)
+        public async Task <int> HandleAiTaskMission(string userGoalMission)
         {
             var aiService = new AndroidAiService();
             int aiResponceType = (int)aiResponceTypeEnum.ButtonLocator;
@@ -30,9 +30,12 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                 string  listThatWeClickBefore = GetPreviousLocatorsListsInfo(currentAiLocator);
                 if (listThatWeClickBefore != null)
                 {
-                    jsonAiResponed = await aiService.GetAiResponedAsJson(fullPageSource, userGoalMission,
-                        $"We already clciked on the next buttons list so please do not return or generate this xpath again:\n " +
-                        $"'{listThatWeClickBefore}'");
+                    jsonAiResponed = await aiService.GetAiResponedAsJson(
+                      fullPageSource,
+                      userGoalMission,
+                      "Here is a list of locators that have already been clicked.\n" +
+                      $"{listThatWeClickBefore}\n\n" +
+                      "Do not return or suggest any of them again");
                 }
                 else
                 {
@@ -168,7 +171,10 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             PreviosLocator.Add(currentAiLocator);
 
-            return string.Join(", ", PreviosLocator.Select(locator => $"'{locator}'"));
+            var lines = PreviosLocator
+                .Select((locator, index) => $"Locator {index + 1}: {locator}");
+
+            return string.Join("\n", lines);
         }
     }
 }

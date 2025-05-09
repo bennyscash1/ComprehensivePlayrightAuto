@@ -36,7 +36,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
             string fullPageSource, int x, int y, string screenSize)
         {
             OpenAiService openAiService = new OpenAiService();
-            string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
+            string responceLocatorFromAi = await openAiService.GrokRequestService(
                 $"Here is the full app XML source:," +
                 $"{fullPageSource}\n\n" +
                 $" I need to find the XPath locator for the button or input field according to the X and Y cordinate>>: '\n" +
@@ -103,16 +103,16 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
            string fullPageSource, string userEndGoalMission, string userUpdateOnFailedScenario ="")
         {
             OpenAiService openAiService = new OpenAiService();
-            string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
-                $"You are an AI agent navigating inside a mobile app.\n" +
-                $"Below is the current screen XML and the user’s goal.\n" +
-                $"Your task is to analyze the screen and return the next best action that will bring the user one step closer to the goal.\n\n" +
-                $"Here is the full app XML source:\n" +
-                $"{fullPageSource}\n\n" +
-                $"User goal:\n{userEndGoalMission}\n\n" +
-                $"Please return only a single valid JSON object (no markdown or formatting), according to the system prompt you received.\n\n" +
+            string responceLocatorFromAi = await openAiService.GrokRequestService(
+                $"XML:\n{fullPageSource}\n\n" +
+                $"The user Goal:\n" +
+
+                $"{userEndGoalMission}\n\n" +
+
                 $"{userUpdateOnFailedScenario}",
+
                 OpenAiService.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
+            
             bool isLocatorValid = isAiReturnValidJson(responceLocatorFromAi);
             if (isLocatorValid)
             {

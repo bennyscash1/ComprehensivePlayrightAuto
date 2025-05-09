@@ -18,7 +18,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
     Category(TestLevel.Level_1)]
     public class MobileAiTaskMission
     {
-        static string runingApp = "staging";
+        static string runingApp = "Calculator";
 
         [SetUp]
         public async Task SetupMobileDevice()
@@ -36,12 +36,11 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
 
             //Click on app buttons
             int type = (int)aiResponceTypeEnum.ButtonLocator;
-            type = await mobileTaskFlow.HandleAiResponce(
-                   "Click on כניסה לבית עסק חדש");
+            type = await mobileTaskFlow.HandleAiTaskMission(
+                   "Do a calculation of number 8 + 9");
 
-            type = await mobileTaskFlow.HandleAiResponce(
-                "On  שם משתמש inser aa@gmail.com and password: Aa123456@");
-
+            type = await mobileTaskFlow.HandleAiTaskMission(
+                 "Cleare all numbers and operators from the screen");
         }
 
     }
