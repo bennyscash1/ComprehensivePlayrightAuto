@@ -14,22 +14,25 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             appiumDriver = i_driver;
             mobileDriverLocator = new MobileLoginPage(appiumDriver);
         }
+        List<By> PreviosLocator = new();
+        By? currentAiLocator;
         public async Task <int> HandleAiResponce(string userGoalMission)
         {
             var aiService = new AndroidAiService();
             int aiResponceType = (int)aiResponceTypeEnum.ButtonLocator;
-            By? PreviosLocator = null;
-
+          
             while (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator ||
                    aiResponceType == (int)aiResponceTypeEnum.InputLocator)
             {
                 // mobileDriverLocator.WaitForPageToLoad();
                 string fullPageSource = GetFullPageSource();
                 string jsonAiResponed = "";
-                if (PreviosLocator != null)
+               ;
+                if (GetPreviousLocatorsListsInfo(currentAiLocator) != null)
                 {
                     jsonAiResponed = await aiService.GetAiResponedAsJson(fullPageSource, userGoalMission,
-                        $"Important: the previous XPath locator that you already clicked on was - '{PreviosLocator}'");
+                        $"Important: the previous XPath locator that you already clicked on was - " +
+                        $"'{GetPreviousLocatorsListsInfo(currentAiLocator)}'");
                 }
                 else
                 {
@@ -46,19 +49,18 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                     ? GetTextInputValuFromJson(jsonAiResponed)
                     : null;
 
-                By? locator = await RetryUntilElementFound(jsonAiResponed, fullPageSource, userGoalMission, aiService);
+                currentAiLocator = await RetryUntilElementFound(jsonAiResponed, fullPageSource, userGoalMission, aiService);
                 
-                if (locator == null)
+                if (currentAiLocator == null)
                      return aiResponceType = (int)aiResponceTypeEnum.AiStuckOrUnsure;
-                PreviosLocator = locator;
                 if (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator)
                 {
-                    mobileDriverLocator.MobileClickElement(locator);
+                    mobileDriverLocator.MobileClickElement(currentAiLocator);
                 }
 
                 else
                 {
-                    mobileDriverLocator.MobileInputTextToField(locator, inputText);
+                    mobileDriverLocator.MobileInputTextToField(currentAiLocator, inputText);
                 }
             }
             return aiResponceType;
@@ -159,6 +161,14 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             return null; // Or throw an exception if required
         }
 
+        public string GetPreviousLocatorsListsInfo(By? currentAiLocator)
+        {
+            if (currentAiLocator == null)
+                return null;
 
+            PreviosLocator.Add(currentAiLocator);
+
+            return string.Join(", ", PreviosLocator.Select(locator => $"'{locator}'"));
+        }
     }
 }

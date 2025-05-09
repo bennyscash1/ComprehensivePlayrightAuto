@@ -34,8 +34,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
             MobileAiTaskFlow mobileTaskFlow = new MobileAiTaskFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-            int type=  await mobileTaskFlow.HandleAiResponce("Take image, then navigate to video mode," +
-                "and click on Starting video recording");
+            int type=  await mobileTaskFlow.HandleAiResponce("נווט למסך צילום וידאו ותלחץ על התחלת צילום וידאו");
         }
 
     }
