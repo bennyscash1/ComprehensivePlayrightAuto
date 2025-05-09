@@ -103,7 +103,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
            string fullPageSource, string userEndGoalMission, string userUpdateOnFailedScenario ="")
         {
             OpenAiService openAiService = new OpenAiService();
-            string responceLocatorFromAi = await openAiService.GrokRequestService(
+            string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
                 $"You are an AI agent navigating inside a mobile app.\n" +
                 $"Below is the current screen XML and the user’s goal.\n" +
                 $"Your task is to analyze the screen and return the next best action that will bring the user one step closer to the goal.\n\n" +

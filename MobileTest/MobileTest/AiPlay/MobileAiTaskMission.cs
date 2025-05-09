@@ -9,6 +9,7 @@ using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 using NUnit.Framework;
 using OpenQA.Selenium.DevTools.V117.Runtime;
 using ComprehensivePlayrightAuto.MobileTest.InitalMobile.InitialMobileService;
+using static ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows.MobileAiTaskFlow;
 
 namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
 {
@@ -17,7 +18,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
     Category(TestLevel.Level_1)]
     public class MobileAiTaskMission
     {
-        static string runingApp = "camera";
+        static string runingApp = "staging";
 
         [SetUp]
         public async Task SetupMobileDevice()
@@ -34,7 +35,13 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
             MobileAiTaskFlow mobileTaskFlow = new MobileAiTaskFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-            int type=  await mobileTaskFlow.HandleAiResponce("נווט למסך צילום וידאו ותלחץ על התחלת צילום וידאו");
+            int type = (int)aiResponceTypeEnum.ButtonLocator;
+            type = await mobileTaskFlow.HandleAiResponce(
+                   "Click on כניסה לבית עסק חדש");
+
+            type = await mobileTaskFlow.HandleAiResponce(
+                "On  שם משתמש inser aa@gmail.com and password: Aa123456@");
+
         }
 
     }

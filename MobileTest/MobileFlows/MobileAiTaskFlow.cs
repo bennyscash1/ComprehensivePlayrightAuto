@@ -14,25 +14,25 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             appiumDriver = i_driver;
             mobileDriverLocator = new MobileLoginPage(appiumDriver);
         }
-        List<By> PreviosLocator = new();
+        List<By> PreviosLocator;
         By? currentAiLocator;
         public async Task <int> HandleAiResponce(string userGoalMission)
         {
             var aiService = new AndroidAiService();
             int aiResponceType = (int)aiResponceTypeEnum.ButtonLocator;
-          
+            PreviosLocator = new();
             while (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator ||
                    aiResponceType == (int)aiResponceTypeEnum.InputLocator)
             {
-                // mobileDriverLocator.WaitForPageToLoad();
+                 mobileDriverLocator.WaitForPageToLoad();
                 string fullPageSource = GetFullPageSource();
                 string jsonAiResponed = "";
-               ;
-                if (GetPreviousLocatorsListsInfo(currentAiLocator) != null)
+                string  listThatWeClickBefore = GetPreviousLocatorsListsInfo(currentAiLocator);
+                if (listThatWeClickBefore != null)
                 {
                     jsonAiResponed = await aiService.GetAiResponedAsJson(fullPageSource, userGoalMission,
-                        $"Important: the previous XPath locator that you already clicked on was - " +
-                        $"'{GetPreviousLocatorsListsInfo(currentAiLocator)}'");
+                        $"We already clciked on the next buttons list so please do not return or generate this xpath again:\n " +
+                        $"'{listThatWeClickBefore}'");
                 }
                 else
                 {
