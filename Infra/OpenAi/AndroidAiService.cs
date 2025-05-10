@@ -20,7 +20,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 $"{userInputView}'\n\n" +
                 $"Please return only xpath without any other text",
                 OpenAiService.SystemPromptTypeEnum.MobileTextInpueRequest);
-            bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);
+            bool isLocatorValid = AndroidAiService.isLocatorValid(responceLocatorFromAi);
             if (isLocatorValid)
             {
                 return responceLocatorFromAi;
@@ -43,7 +43,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 $"the X cordinate:{x}', the Y cordinate: {y}\n\n" +
                 $"Please return only xpath without any other text",
                 OpenAiService.SystemPromptTypeEnum.MobileXyCordinateRequest);
-            bool isLocatorValid = IsLocatorIsVald(responceLocatorFromAi);
+            bool isLocatorValid = AndroidAiService.isLocatorValid(responceLocatorFromAi);
             if (isLocatorValid)
             {
                 return responceLocatorFromAi;
@@ -55,7 +55,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 return string.Empty; // or throw an exception, or return a default value
             }
         }
-        public static bool IsLocatorIsVald(string locator)
+        public static bool isLocatorValid(string locator)
         {
             if (string.IsNullOrWhiteSpace(locator))
                 return false;

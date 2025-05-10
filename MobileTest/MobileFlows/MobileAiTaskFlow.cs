@@ -33,7 +33,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                     jsonAiResponed = await aiService.GetAiResponedAsJson(
                       fullPageSource,
                       userGoalMission,
-                      "Here is a list of locators that have already been clicked.\n" +
+                      "Update: Here is a list of locators that have already been clicked.\n" +
                       $"{listThatWeClickBefore}\n\n" +
                       "Do not return or suggest any of them again");
                 }
@@ -74,6 +74,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             By locator = GetXPathLocatorFromAiJson(jsonResponse);
             By PreviosButtonClickLocator;
             int retry = 0;
+            #region Test if the element display on the page
             while (!mobileDriverLocator.IsHavyElementFount(locator) && retry < 3)
             {
                 jsonResponse = await aiService.GetAiResponedAsJson(
@@ -83,6 +84,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                 PreviosButtonClickLocator = locator;
                 retry++;
             }
+            #endregion
             //Do it so the ai will know the previos locator
             return mobileDriverLocator.IsHavyElementFount(locator) ? locator : null;
         }

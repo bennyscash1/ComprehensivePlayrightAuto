@@ -57,19 +57,31 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
             string locator = "";
             int retry = 0;
+            bool isLocatorValid = false;
+            bool isElementExsist = false;
 
-            while (retry < 2)
+            while ((isLocatorValid == false || isElementExsist == false) && retry < 2)
             {
-                locator = await aiService.GetAndroidLocatorFromUserTextInput(fullPageSource, elementView);
-                //Test if the locator valid, of no send it again to the ai
-                if (AndroidAiService.IsLocatorIsVald(locator))
-                    return By.XPath(locator);
+                if (!isLocatorValid)
+                {
+                    locator = await aiService.GetAndroidLocatorFromUserTextInput(fullPageSource, elementView);
+                    isLocatorValid = AndroidAiService.isLocatorValid(locator);
+                }
+                if (isLocatorValid)
+                {
+                    isElementExsist = mobileBasePages.IsHavyElementFount(By.XPath(locator));
+                }
                 retry++;
+            }
+            if (isLocatorValid && isElementExsist)
+            {
+                return By.XPath(locator);
             }
 
             Console.WriteLine($"[AI] Could not resolve a valid locator for '{elementView}'. Last attempt: {locator}");
-            return null;
+            return null; // or `return By.XPath("");` if your system supports empty XPath
         }
+
         #endregion
 
         #region Click on Xy cordinate
@@ -100,7 +112,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
                 locator = await aiService.GetAndroidLocatorFromUserXyCordinate(fullSizeScreen,
                     x, y, screenSize);
                 //Test if the locator valid, of no send it again to the ai
-                if (AndroidAiService.IsLocatorIsVald(locator))
+                if (AndroidAiService.isLocatorValid(locator))
                     return By.XPath(locator);
                 retry++;
             }
