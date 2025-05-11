@@ -36,7 +36,6 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
             //Click on app buttons
             await mobileTaskFlow.TalkWithApp("Click on .0");
 
-            await mobileTaskFlow.TalkWithApp("Click on =");
 
 
             int type = (int)aiResponceTypeEnum.ButtonLocator;

@@ -48,7 +48,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
         }
 
-
+        #region Get ai element for single element
         private async Task<By?> GetAiElementLocator(string elementView)
         {
             mobileBasePages.WaitForPageToLoad();
@@ -81,6 +81,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
             Console.WriteLine($"[AI] Could not resolve a valid locator for '{elementView}'. Last attempt: {locator}");
             return null; // or `return By.XPath("");` if your system supports empty XPath
         }
+        #endregion
 
         #endregion
 

@@ -9,6 +9,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
 {
     public class AndroidAiService
     {
+        #region Get Locator from AI for click locator
         public async Task<string> GetAndroidLocatorFromUserTextInput(
             string fullPageSource, string userInputView)
         {
@@ -32,6 +33,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 return string.Empty; // or throw an exception, or return a default value
             }
         }
+        #endregion
         public async Task<string> GetAndroidLocatorFromUserXyCordinate(
             string fullPageSource, int x, int y, string screenSize)
         {
@@ -139,8 +141,9 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 return false;
             }
         }
+        #endregion
+
     }
 }
-    #endregion
 
 
