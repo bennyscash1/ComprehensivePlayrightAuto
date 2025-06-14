@@ -15,7 +15,8 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             MobileTextInpueRequest,
             MobileSystemPromptMissionTask,
             MobileXyCordinateRequest,
-            ImagesCompare
+            ImagesCompare,
+            WebSystemPrompt
         }
         string mobilePrePrompt = "You are an automation expert.\n" +
             "Given a mobile XML element dump, return only the XPath of the button or element best matching the target.\n\n" +

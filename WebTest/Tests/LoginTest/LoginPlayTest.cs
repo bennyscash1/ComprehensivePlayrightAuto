@@ -33,7 +33,6 @@ namespace ComprehensiveAutomation.Test.UiTest.Tests.LoginTest
                 .BoValidLoginAsync(WebUserName, WebPassword);
             bool isHomePage = await loginFlow.IsHomePageDisplay();
             Assert.That(isHomePage, Is.True);
-
         }
     }
 }

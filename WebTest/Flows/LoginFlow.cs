@@ -30,8 +30,6 @@ namespace ComprehensiveAutomation.Test.UiTest.Tests.Flows
                 .ContinueWith(async =>
                 loginPage.ClickEnter())
                 .Unwrap();
-
-
         }
         public async Task <bool> IsHomePageDisplay()
         {
