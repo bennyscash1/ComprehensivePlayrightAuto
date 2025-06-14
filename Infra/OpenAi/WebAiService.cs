@@ -10,11 +10,11 @@ namespace ComprehensivePlayrightAuto.Infra.OpenAi
     public class WebAiService
     {
         public async Task<string> GetWebSingleLocatorFromUrl(
-            string urlWeb, string userRequest)
+            string webDomString, string userRequest)
         {
             OpenAiService openAiService = new OpenAiService();
-            string responseLocatorFromAi = await openAiService.OpenAiServiceRequest(
-                $"Here is the full url: {urlWeb}\n\n" +
+            string responseLocatorFromAi = await openAiService.GrokRequestService(
+                $"Here is the full url: {webDomString}\n\n" +
                 $"I need to find the Xpath selector for the element that matches: '{userRequest}'\n\n" +
                 $"Please return only the XPATH selector without any other text",
                 OpenAiService.SystemPromptTypeEnum.WebSystemPrompt);

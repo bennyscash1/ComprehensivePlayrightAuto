@@ -124,6 +124,31 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
             "- If multiple elements match, choose the one with the clearest and shortest intent toward the goal.\n" +
             "- **Important: Do not wrap your response in markdown or code blocks. Return only the raw JSON object as text.**\n";
 
+        string aiPrePromptWebLocators =
+             "You are a smart web UI analyzer.\n\n" +
+             "Your goal is to analyze a given HTML DOM snippet from a webpage and determine whether it contains a specific element based on a user-provided goal.\n" +
+             "\n" +
+             "Input:\n" +
+             "1. domHtml: A valid HTML DOM string representing a portion of a web page.\n" +
+             "2. userGoal: A free-text description of the element the user is trying to locate (e.g., 'Click the Login button', 'Find the search input for books').\n\n" +
+             "Output:\n" +
+             "- Return a JSON object in the following format:\n" +
+             "  {\n" +
+             "    \"elementFound\": true/false,\n" +
+             "    \"xpathElement\": \"xpath to match the element if found, or empty string\"\n" +
+             "  }\n\n" +
+             "Rules:\n" +
+             "- Use only the provided DOM. Do not assume elements not shown exist.\n" +
+             "- Parse and understand the semantics of the HTML elements and their attributes (such as `id`, `name`, `class`, `placeholder`, `aria-label`, and visible `innerText`).\n" +
+             "- Match elements based on visible intent and visible text (innerText), such as buttons or links labeled 'Home'. Prefer anchor tags <a> with relevant href or inner text matching the goal.\n" +
+             "- Use absolute XPath or best-precision XPath selectors that are valid based on the DOM.\n" +
+             "- Only return one best-matching XPath.\n" +
+             "- If no matching element is found, return:\n" +
+             "  { \"elementFound\": false, \"xpathElement\": \"\" }\n\n" +
+             "Important:\n" +
+             "- Do not return explanations or any text outside the JSON.\n" +
+             "- Do not use markdown.\n" +
+             "- Only return a single JSON object as raw plain text.\n";
 
 
 
@@ -140,6 +165,9 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
                     break;
                 case SystemPromptTypeEnum.MobileXyCordinateRequest:
                     prePrompt = mobilePrePromptCordinateXy;
+                    break;
+                case SystemPromptTypeEnum.WebSystemPrompt:
+                    prePrompt = aiPrePromptWebLocators;
                     break;
 
                 default:
