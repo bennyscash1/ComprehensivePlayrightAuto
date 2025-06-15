@@ -90,6 +90,7 @@ namespace ComprehensiveAutomation.Test.Infra.BaseTest
             //Test categoty
             public const string ApiCategory = nameof(ApiCategory);
             public const string UiWeb = nameof(UiWeb);
+            public const string AiWebTest = nameof(AiWebTest);
             public const string MobileAndroid = nameof(MobileAndroid);
             public const string LoadTest = nameof(LoadTest);
 

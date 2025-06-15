@@ -9,7 +9,7 @@ namespace ComprehensivePlayrightAuto.Infra.OpenAi
 {
     public class WebAiService
     {
-        public async Task<string> GetWebSingleLocatorFromUrl(
+        public async Task<string> GetWebActionLocator(
             string webDomString, string userRequest)
         {
             OpenAiService openAiService = new OpenAiService();
@@ -17,7 +17,7 @@ namespace ComprehensivePlayrightAuto.Infra.OpenAi
                 $"Here is the full url: {webDomString}\n\n" +
                 $"I need to find the Xpath selector for the element that matches: '{userRequest}'\n\n" +
                 $"Please return only the XPATH selector without any other text",
-                OpenAiService.SystemPromptTypeEnum.WebSystemPrompt);
+                OpenAiService.SystemPromptTypeEnum.WebSystemActionPrompt);
             return responseLocatorFromAi;
         }
 

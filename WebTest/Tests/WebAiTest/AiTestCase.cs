@@ -10,18 +10,21 @@ using static ComprehensiveAutomation.Test.Infra.BaseTest.EnumList;
 
 namespace ComprehensivePlayrightAuto.WebTest.Tests.WebAiTest
 {
-    [TestFixture, Category(Categories.UiWeb),
+    [TestFixture, Category(Categories.AiWebTest),
     Category(TestLevel.Level_1)]
     public class AiTestCase : PlaywrightFactory
     {
         [Test]
         public async Task _AiTestCase()
         {
-            await GotoAsync("https://codepen.io/bshor/full/WNLmXLo");
+            await GotoAsync("https://practicetestautomation.com/practice-test-login/");
             WebAiFlow webAiFlow = new WebAiFlow(pPage);
 
             await webAiFlow
-                .GetWebSingleLocatorFromUrl("Click on 'Go to the homepage' button");
+                .WebAiAction("User name input field", "student");
+            await webAiFlow
+                .WebAiAction("Password input field", "Password123");
+            await webAiFlow.WebAiAction("Submit button");
 
         }
     }

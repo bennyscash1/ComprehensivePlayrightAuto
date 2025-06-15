@@ -46,7 +46,7 @@ namespace ComprehensiveAutomation.Test.PageObject
         }
         public bool IsHomePageDisplay()
         {
-            IsElementFoundAsync(m_hellowHomePage);
+            IsElementXpathFoundAsync(m_hellowHomePage);
             return true;
         }
         /*    public LoginPage EnterEmail(string i_email)

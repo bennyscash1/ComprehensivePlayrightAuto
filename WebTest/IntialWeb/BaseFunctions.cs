@@ -32,31 +32,31 @@ namespace ComprehensiveAutomation.UiTest.BaseData
             _page = i_driver;    
         }
 
-        public async Task<bool> IsElementFoundAsync(string selector)
-        {         
+        public async Task<bool> IsElementXpathFoundAsync(string selector)
+        {
             try
             {
-                await _page.WaitForSelectorAsync(selector, new PageWaitForSelectorOptions
+                await _page.WaitForSelectorAsync($"xpath={selector}", new PageWaitForSelectorOptions
                 {
                     State = WaitForSelectorState.Visible,
-                    Timeout = timeWait  
+                    Timeout = 5000
                 });
-              //  await MarkElementAsync(selector);
-             //   await MarkElementAsync (selector);
-                return true; 
+
+                return true;
             }
             catch (TimeoutException)
             {
-                return false; 
+                return false;
             }
         }
- 
+
+
         public async Task ClickAsync(string selector)
         {
             bool elementVisible = false;
-            if (await IsElementFoundAsync(selector) == true)
+            if (await IsElementXpathFoundAsync(selector) == true)
             {
-                await IsElementFoundAsync(selector);
+                await IsElementXpathFoundAsync(selector);
                 await _page.ClickAsync(selector);
                 elementVisible = true;
             }
@@ -65,9 +65,9 @@ namespace ComprehensiveAutomation.UiTest.BaseData
         public async Task FuillTextAsync(string selector, string input)
         {
             bool elementVisible = false;
-            if (await IsElementFoundAsync(selector) == true)
+            if (await IsElementXpathFoundAsync(selector) == true)
             {
-                await IsElementFoundAsync(selector);
+                await IsElementXpathFoundAsync(selector);
                 await _page.FillAsync(selector, input);
                 elementVisible = true;
             }

@@ -13,21 +13,30 @@ namespace ComprehensivePlayrightAuto.WebTest.Flows.AiWebFlow
     public class WebAiFlow : BaseFlows
     {
         public IPage pDriver;
-        public WebAiPages webAiPages;
+        public WebAiActionPages webAiPages;
 
         public WebAiFlow(IPage i_driver) : base(i_driver)
         {
             pDriver = i_driver;
-            webAiPages = new WebAiPages(i_driver);
+            webAiPages = new WebAiActionPages(i_driver);
 
         }
-        public async Task GetWebSingleLocatorFromUrl(string userAction)      
+        public async Task WebAiAction(string userAction , string userInput ="")      
         {
             string xpathLocator = await webAiPages
                 .GetXpathFromFullDom(userAction);
-
-            await webAiPages
-                .AiLocatorClickOnButton(xpathLocator);
+            if (string.IsNullOrEmpty(userInput))
+            {
+                await webAiPages
+                    .AiLocatorClickOnButton(xpathLocator);
+            }
+            
+         
+            if (!string.IsNullOrEmpty(userInput))
+            {
+                await webAiPages
+                    .AiLocatorInputAction(xpathLocator, userInput);
+            }
         }
 
     }
