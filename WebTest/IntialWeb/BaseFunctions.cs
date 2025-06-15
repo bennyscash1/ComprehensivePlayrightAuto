@@ -57,7 +57,7 @@ namespace ComprehensiveAutomation.UiTest.BaseData
             if (await IsElementXpathFoundAsync(selector) == true)
             {
                 await IsElementXpathFoundAsync(selector);
-                await _page.ClickAsync(selector);
+                await _page.ClickAsync($"xpath={selector}");
                 elementVisible = true;
             }
             Assert.That(elementVisible);
@@ -68,7 +68,7 @@ namespace ComprehensiveAutomation.UiTest.BaseData
             if (await IsElementXpathFoundAsync(selector) == true)
             {
                 await IsElementXpathFoundAsync(selector);
-                await _page.FillAsync(selector, input);
+                await _page.FillAsync($"xpath={selector}", input);
                 elementVisible = true;
             }
             Assert.That(elementVisible);

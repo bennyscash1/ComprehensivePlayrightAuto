@@ -17,14 +17,13 @@ namespace ComprehensivePlayrightAuto.WebTest.Tests.WebAiTest
         [Test]
         public async Task _AiTestCase()
         {
-            await GotoAsync("https://practicetestautomation.com/practice-test-login/");
+            await GotoAsync("file:///C:/Bennys/Data/clickOneDemo.html");
             WebAiFlow webAiFlow = new WebAiFlow(pPage);
 
+    
             await webAiFlow
-                .WebAiAction("User name input field", "student");
-            await webAiFlow
-                .WebAiAction("Password input field", "Password123");
-            await webAiFlow.WebAiAction("Submit button");
+                .WebAiAction("Enter userName input field", "BennyShor");
+            await webAiFlow.WebAiAction("Click here button");
 
         }
     }
