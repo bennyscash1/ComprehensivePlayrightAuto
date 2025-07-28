@@ -38,7 +38,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
 
 
 
-            int type = (int)aiResponceTypeEnum.ButtonLocator;
+            int type = (int)aiResponceTypeEnumMobile.ButtonLocator;
             type = await mobileTaskFlow.HandleAiTaskMission(
                    "Click on number 9,  then on operator +, and click on number 8");
             await mobileTaskFlow.TalkWithApp("Click on Operator =");

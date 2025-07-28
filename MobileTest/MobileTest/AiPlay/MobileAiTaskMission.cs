@@ -35,7 +35,7 @@ namespace ComprehensivePlayrightAuto.MobileTest.MobileTest.AiPlay
             MobileAiTaskFlow mobileTaskFlow = new MobileAiTaskFlow(mobileDriver.appiumDriver);
 
             //Click on app buttons
-            int type = (int)aiResponceTypeEnum.ButtonLocator;
+            int type = (int)aiResponceTypeEnumMobile.ButtonLocator;
             type = await mobileTaskFlow.HandleAiTaskMission(
                    "Do a calculation of number 8 + 9");
 

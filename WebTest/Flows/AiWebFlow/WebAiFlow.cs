@@ -38,6 +38,15 @@ namespace ComprehensivePlayrightAuto.WebTest.Flows.AiWebFlow
                     .AiLocatorInputAction(xpathLocator, userInput);
             }
         }
+        public async Task<int> WebAiTaskMissionFlow(string userTaskMission)
+        {
+            WebAiTaskPages webAiTaskPages = new WebAiTaskPages(pDriver);
+            int jsonResponceAi = await webAiTaskPages
+                .GetXpathFromDomAccordingToUserTaks(userTaskMission);
+
+            //here will be the input or click according to the return json type
+            return 0;
+        }
 
     }
 }

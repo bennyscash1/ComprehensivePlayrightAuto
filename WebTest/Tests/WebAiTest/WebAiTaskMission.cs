@@ -12,18 +12,17 @@ namespace ComprehensivePlayrightAuto.WebTest.Tests.WebAiTest
 {
     [TestFixture, Category(Categories.AiWebTest),
     Category(TestLevel.Level_1)]
-    public class AiTestCase : PlaywrightFactory
+    public class WebAiTaskMission : PlaywrightFactory
     {
         [Test]
-        public async Task _AiTestCase()
+        public async Task _WebAiTaskMission()
         {
             await GotoAsync("file:///C:/Bennys/AutoProjects/CSharpCompAuto/ComprehensivePlayrightAuto/clickDemo.html");
             WebAiFlow webAiFlow = new WebAiFlow(pPage);
 
     
             await webAiFlow
-                .WebAiAction("Enter userName input field", "BennyShor");
-            await webAiFlow.WebAiAction("Click here button");
+                .WebAiTaskMissionFlow("Enter name 'Benny shor' and next click on 'click here' button");
 
         }
     }

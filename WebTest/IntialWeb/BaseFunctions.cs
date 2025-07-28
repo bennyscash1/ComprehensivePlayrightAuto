@@ -36,7 +36,7 @@ namespace ComprehensiveAutomation.UiTest.BaseData
         {
             try
             {
-                await _page.WaitForSelectorAsync($"xpath={selector}", new PageWaitForSelectorOptions
+                await _page.WaitForSelectorAsync($"{selector}", new PageWaitForSelectorOptions
                 {
                     State = WaitForSelectorState.Visible,
                     Timeout = 5000
@@ -54,10 +54,11 @@ namespace ComprehensiveAutomation.UiTest.BaseData
         public async Task ClickAsync(string selector)
         {
             bool elementVisible = false;
+            selector = BuildSelector(selector);
             if (await IsElementXpathFoundAsync(selector) == true)
             {
                 await IsElementXpathFoundAsync(selector);
-                await _page.ClickAsync($"xpath={selector}");
+                await _page.ClickAsync($"{selector}");
                 elementVisible = true;
             }
             Assert.That(elementVisible);
@@ -65,15 +66,23 @@ namespace ComprehensiveAutomation.UiTest.BaseData
         public async Task FuillTextAsync(string selector, string input)
         {
             bool elementVisible = false;
+            selector = BuildSelector(selector);
             if (await IsElementXpathFoundAsync(selector) == true)
             {
-                await IsElementXpathFoundAsync(selector);
-                await _page.FillAsync($"xpath={selector}", input);
+                await _page.FillAsync($"{selector}", input);
                 elementVisible = true;
             }
             Assert.That(elementVisible);
         }
         #endregion
+
+        public string BuildSelector(string rawSelector)
+        {
+            if (rawSelector.StartsWith("//") || rawSelector.StartsWith("("))
+                return $"xpath={rawSelector}";
+            else
+                return rawSelector; // CSS – לא צריך לציין
+        }
 
     }
 }

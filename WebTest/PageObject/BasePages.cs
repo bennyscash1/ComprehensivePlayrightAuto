@@ -33,7 +33,11 @@ namespace ComprehensiveAutomation.Test.PageObject
         }
 
 
+        public async Task AiInputLocaoor(string locator, string input)
+        {
+            await FuillTextAsync(locator, input);
 
+        }
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using ComprehensiveAutomation.Test.UiTest.MobileTest.MobilePageObject;
+using ComprehensivePlayrightAuto.Infra.AiService.SystemAiService;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Android;
-using SafeCash.Test.ApiTest.InternalApiTest.Buyer;
 using System.Text.Json;
 
 namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
@@ -19,10 +19,10 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
         public async Task <int> HandleAiTaskMission(string userGoalMission)
         {
             var aiService = new AndroidAiService();
-            int aiResponceType = (int)aiResponceTypeEnum.ButtonLocator;
+            int aiResponceType = (int)aiResponceTypeEnumMobile.ButtonLocator;
             PreviosLocator = new();
-            while (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator ||
-                   aiResponceType == (int)aiResponceTypeEnum.InputLocator)
+            while (aiResponceType == (int)aiResponceTypeEnumMobile.ButtonLocator ||
+                   aiResponceType == (int)aiResponceTypeEnumMobile.InputLocator)
             {
                  mobileDriverLocator.WaitForPageToLoad();
                 string fullPageSource = GetFullPageSource();
@@ -44,19 +44,19 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
                 aiResponceType = GetTypeFromJson(jsonAiResponed);
 
-                if (aiResponceType != (int)aiResponceTypeEnum.ButtonLocator &&
-                    aiResponceType != (int)aiResponceTypeEnum.InputLocator)
+                if (aiResponceType != (int)aiResponceTypeEnumMobile.ButtonLocator &&
+                    aiResponceType != (int)aiResponceTypeEnumMobile.InputLocator)
                     break;
 
-                string? inputText = aiResponceType == (int)aiResponceTypeEnum.InputLocator
+                string? inputText = aiResponceType == (int)aiResponceTypeEnumMobile.InputLocator
                     ? GetTextInputValuFromJson(jsonAiResponed)
                     : null;
 
                 currentAiLocator = await RetryUntilElementFound(jsonAiResponed, fullPageSource, userGoalMission, aiService);
                 
                 if (currentAiLocator == null)
-                     return aiResponceType = (int)aiResponceTypeEnum.AiStuckOrUnsure;
-                if (aiResponceType == (int)aiResponceTypeEnum.ButtonLocator)
+                     return aiResponceType = (int)aiResponceTypeEnumMobile.AiStuckOrUnsure;
+                if (aiResponceType == (int)aiResponceTypeEnumMobile.ButtonLocator)
                 {
                     mobileDriverLocator.MobileClickElement(currentAiLocator);
                 }
@@ -92,7 +92,7 @@ namespace ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows
 
 
 
-        public enum aiResponceTypeEnum
+        public enum aiResponceTypeEnumMobile
         {
             ButtonLocator = 1,
             InputLocator = 2,

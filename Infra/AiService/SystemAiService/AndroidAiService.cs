@@ -1,11 +1,12 @@
-﻿using NUnit.Framework;
+﻿using ComprehensivePlayrightAuto.Infra.OpenAi;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using SafeCash.Test.ApiTest.Integration.OpenAi;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
+namespace ComprehensivePlayrightAuto.Infra.AiService.SystemAiService
 {
     public class AndroidAiService
     {
@@ -13,14 +14,14 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
         public async Task<string> GetAndroidLocatorFromUserTextInput(
             string fullPageSource, string userInputView)
         {
-            OpenAiService openAiService = new OpenAiService();
+            AiSystemService openAiService = new AiSystemService();
             string responceLocatorFromAi = await openAiService.OpenAiServiceRequest(
                 $"Here is the full app XML source:," +
                 $"{fullPageSource}\n\n" +
                 $" I need to find the XPath locator for the button or input field for the next line>>: '\n" +
                 $"{userInputView}'\n\n" +
                 $"Please return only xpath without any other text",
-                OpenAiService.SystemPromptTypeEnum.MobileTextInpueRequest);
+                AiSystemPrompts.SystemPromptTypeEnum.MobileTextInpueRequest);
             bool isLocatorValid = AndroidAiService.isLocatorValid(responceLocatorFromAi);
             if (isLocatorValid)
             {
@@ -37,14 +38,14 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
         public async Task<string> GetAndroidLocatorFromUserXyCordinate(
             string fullPageSource, int x, int y, string screenSize)
         {
-            OpenAiService openAiService = new OpenAiService();
+            AiSystemService openAiService = new AiSystemService();
             string responceLocatorFromAi = await openAiService.GrokRequestService(
                 $"Here is the full app XML source:," +
                 $"{fullPageSource}\n\n" +
                 $" I need to find the XPath locator for the button or input field according to the X and Y cordinate>>: '\n" +
                 $"the X cordinate:{x}', the Y cordinate: {y}\n\n" +
                 $"Please return only xpath without any other text",
-                OpenAiService.SystemPromptTypeEnum.MobileXyCordinateRequest);
+                AiSystemPrompts.SystemPromptTypeEnum.MobileXyCordinateRequest);
             bool isLocatorValid = AndroidAiService.isLocatorValid(responceLocatorFromAi);
             if (isLocatorValid)
             {
@@ -84,11 +85,11 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
 
         public async Task<bool> IsImagesAreCompareUseAi(string expectedImagePath, string actualImagePath)
         {
-            OpenAiService openAiService = new OpenAiService();
+            AiSystemService openAiService = new AiSystemService();
             string responseOpenAi = await openAiService.OpenAiServiceRequest(
                 $"image 1: {expectedImagePath} " +
                 $"image 2: {actualImagePath} ",
-                OpenAiService.SystemPromptTypeEnum.ImagesCompare);
+                AiSystemPrompts.SystemPromptTypeEnum.ImagesCompare);
 
             if (responseOpenAi.Contains("true", StringComparison.OrdinalIgnoreCase))
             {
@@ -104,7 +105,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
         public async Task<string> GetAiResponedAsJson(
            string fullPageSource, string userEndGoalMission, string userUpdateOnFailedScenario ="")
         {
-            OpenAiService openAiService = new OpenAiService();
+            AiSystemService openAiService = new AiSystemService();
             string responceLocatorFromAi = await openAiService.GrokRequestService(
                 $"XML:\n{fullPageSource}\n\n" +
                 $"The user Goal:\n" +
@@ -112,8 +113,7 @@ namespace SafeCash.Test.ApiTest.InternalApiTest.Buyer
                 $"{userEndGoalMission}\n\n" +
 
                 $"{userUpdateOnFailedScenario}",
-
-                OpenAiService.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
+                 AiSystemPrompts.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
             
             bool isLocatorValid = isAiReturnValidJson(responceLocatorFromAi);
             if (isLocatorValid)

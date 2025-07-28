@@ -1,5 +1,5 @@
 ﻿using ComprehensiveAutomation.Test.PageObject;
-using ComprehensivePlayrightAuto.Infra.OpenAi;
+using ComprehensivePlayrightAuto.Infra.AiService.SystemAiService;
 using HtmlAgilityPack;
 using Microsoft.Playwright;
 using System;
@@ -23,17 +23,9 @@ namespace ComprehensivePlayrightAuto.WebTest.PageObject.WebAiPages
         {
             string fullPageDom = await pDriver
                 .EvaluateAsync<string>("() => document.documentElement.outerHTML");
-            #region if you want to check on local dom
-      /*      string xpathLocalLocator = GetBestMatchingXPath(fullPageDom, userAction);
-            if (IsValidXPath(xpathLocalLocator))
-            {
-                bool isXpathFound = await IsElementXpathFoundAsync(xpathLocalLocator);
-                if (isXpathFound)
-                {
-                    return xpathLocalLocator;
-                }
-            }*/
-            #endregion
+
+
+
             bool isLocatorFound = false;
             var domParts = SplitDomStringIntoParts(fullPageDom, 2);
             foreach (var parDom in domParts)

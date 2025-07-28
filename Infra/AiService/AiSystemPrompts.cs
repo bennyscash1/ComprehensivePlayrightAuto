@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
-using OpenAI.Chat;
-using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace SafeCash.Test.ApiTest.Integration.OpenAi
+namespace ComprehensivePlayrightAuto.Infra.OpenAi
 {
-    public class OpenAiService
+    public class AiSystemPrompts
     {
         public static string openAiModel = "gpt-4o-mini";
         #region SystemPrompt
@@ -151,6 +152,44 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
              "- Do not use markdown.\n" +
              "- Only return a single JSON object as raw plain text.\n";
 
+        string aiSystemPromptMissionTaskWeb = "You are an intelligent navigation agent inside a web browser automation tool.\n\n" +
+     "Your goal is to analyze each webpage (given as an HTML DOM string) and guide the user step-by-step toward reaching the desired page or completing the requested action.\n\n" +
+     "Input:\n" +
+     "1. domHtml: A complete HTML DOM string representing the current web page.\n" +
+     "2. userGoal: A free-text description of the page the user wants to reach or the action they want to complete (e.g., 'Go to the login page and sign in with email test@example.com').\n\n" +
+     "Process:\n" +
+     "- Parse the HTML structure.\n" +
+     "- Check if the current page fulfills the user's goal.\n" +
+     "  - If all required user actions (e.g., filling inputs, clicking buttons) have already been performed **based on previous assistant responses** and **the current DOM still includes all necessary elements** – assume the action has been completed and return { \"type\": 3 }.\n" +
+     "  - You do **not** need to wait for visual confirmation or a new page – if you already guided the user to fill a field and the DOM shows it filled, and the clickable element you previously suggested still exists, consider the task complete.\n" +
+     "  - If the goal has been reached: return { \"type\": 3 }\n\n" +
+     "- If the goal has not been reached:\n" +
+     "  - Identify the **most direct and visible interactive element** that will advance the user one step closer to the goal.\n" +
+     "  - Prefer 'Next', 'Submit', 'OK', or dismiss/pop-up buttons, unless the goal requires configuration or navigation.\n" +
+     "  - Only return CSS selectors or XPath expressions that match real, existing elements in the provided DOM.\n" +
+     "  - Avoid index-based selectors. Use clear attributes like id, class, name, text, aria-label, etc.\n" +
+     "  - If the element is a button or link to click:\n" +
+     "    { \"type\": 1, \"selector\": \"valid CSS or XPath selector\" }\n" +
+     "  - If it's a text input field:\n" +
+     "    { \"type\": 2, \"selector\": \"valid CSS or XPath selector\", \"value\": \"value to input\" }\n\n" +
+     "- Only return **one step per response**.\n" +
+     "- If there is nothing reasonable to do, return:\n" +
+     "  { \"type\": 0 }\n\n" +
+     "Response format:\n" +
+     "1. Click:\n" +
+     "{ \"type\": 1, \"selector\": \"...\" }\n\n" +
+     "2. Input:\n" +
+     "{ \"type\": 2, \"selector\": \"...\", \"value\": \"...\" }\n\n" +
+     "3. Goal complete:\n" +
+     "{ \"type\": 3 }\n\n" +
+     "4. No next action:\n" +
+     "{ \"type\": 0 }\n\n" +
+     "Notes:\n" +
+     "- Assume the user follows your instructions.\n" +
+     "- Use visibility, text, attributes to determine best matching element.\n" +
+     "- Never suggest hidden or disabled elements.\n" +
+     "- Never wrap your response in markdown or code blocks. Return only the raw JSON object as text.\n";
+
 
 
         public string GetSystemPrompt(SystemPromptTypeEnum aiRequest)
@@ -170,159 +209,15 @@ namespace SafeCash.Test.ApiTest.Integration.OpenAi
                 case SystemPromptTypeEnum.WebSystemActionPrompt:
                     prePrompt = aiPrePromptWebLocators;
                     break;
+                case SystemPromptTypeEnum.WebSystemTaskPrompt:
+                    prePrompt = aiSystemPromptMissionTaskWeb;
+                    break;
 
                 default:
                     prePrompt = "You are an AI assistant."; // Default fallback
                     break;
             }
             return prePrompt;
-        }
-        #endregion
-
-        #region OpenAiServiceRequest
-
-        public async Task<string> OpenAiServiceRequest(string userPrompts, SystemPromptTypeEnum systemPrompt)
-        {
-            string model = openAiModel;
-            string prePrompt = GetSystemPrompt(systemPrompt);
-
-            string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("API key is missing from environment variables.");
-            string apiResponce = "An error occurred or no response was returned.";
-            //string combinedPrompt = $"{prePrompt}\n\n{userPrompts}";
-            try
-            {
-                ChatClient client = new ChatClient(model, apiKey);
-
-                var openAiRequest = new
-                {
-                    model = model,
-                    messages = new[]
-                    {
-                      new { role = "system", content = prePrompt },
-                      new { role = "user", content = userPrompts }
-                     }
-                };
-                string jsonBody = JsonConvert.SerializeObject(openAiRequest, Formatting.Indented);
-
-                UserChatMessage message = new UserChatMessage(jsonBody);
-                ChatCompletion completion = await client.CompleteChatAsync(message);
-
-                if (completion?.Content != null && completion.Content.Count > 0)
-                {
-                    apiResponce = completion.Content[0].Text;
-
-                }
-                else
-                {
-                    apiResponce = "No valid content found in the response.";
-                }
-                Console.WriteLine("after ai");
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            return apiResponce;
-        }
-
-        #endregion
-
-        #region Grok ai request
-        public async Task<string> GrokRequestService(string userMessage, SystemPromptTypeEnum aiRequest)
-        {
-            string grokUrl = "https://api.x.ai/v1/chat/completions";
-            string apiGrokKey = Environment.GetEnvironmentVariable("GROK_API_KEY") ?? throw new InvalidOperationException("API key is missing from environment variables.");
-
-            using (HttpClient client = new HttpClient())
-            {
-                string aiPrePromptType = GetSystemPrompt(aiRequest);
-
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiGrokKey}");
-
-                var requestBody = new
-                {
-                    messages = new[]
-                    {
-                new { role = "system", content = aiPrePromptType },
-                new { role = "user", content = userMessage }
-                },
-                    model = "grok-3-mini-fast-latest",
-                    stream = false,
-                    temperature = 0
-                };
-
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync(grokUrl, jsonContent);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-
-                    // ✅ Extract only the "content" field from the response
-                    using JsonDocument doc = JsonDocument.Parse(jsonResponse);
-
-                    if (doc.RootElement.TryGetProperty("choices", out JsonElement choicesArray) &&
-                        choicesArray.GetArrayLength() > 0 &&
-                        choicesArray[0].TryGetProperty("message", out JsonElement message) &&
-                        message.TryGetProperty("content", out JsonElement contentElement))
-                    {
-                        return contentElement.GetString() ?? "No content available.";
-                    }
-
-                    return "Invalid response format.";
-                }
-                else
-                {
-                    return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
-                }
-            }
-        }
-        #endregion
-
-        #region Deep seek ai request
-        private readonly HttpClient _httpClient = new HttpClient();
-
-        public async Task<string> DeepSeekResponceAi(string userPrompts, SystemPromptTypeEnum aiRequest)
-        {
-            string apiUrl = "https://api.deepseek.com/chat/completions"; // Replace with actual API URL
-            string bearerToken = "sk-5706d7050b8c4bddb967ba236538d89d"; // Replace with actual token
-            string prePrompt = GetSystemPrompt(aiRequest);
-            var requestBody = new
-            {
-                model = "deepseek-chat",
-                messages = new[]
-                {
-                new { role = "system", content = prePrompt },
-                new { role = "user", content = userPrompts }
-            },
-                stream = false
-            };
-
-            string jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json"); // ✅ "Content-Type" set correctly here
-
-            var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
-            {
-                Content = content
-            };
-
-            request.Headers.Add("Authorization", $"Bearer {bearerToken}"); // ✅ Correct place for Authorization
-                                                                           // No need to add "Content-Type" again here
-
-            HttpResponseMessage response = await _httpClient.SendAsync(request);
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-
-            using JsonDocument doc = JsonDocument.Parse(jsonResponse);
-
-            string? contentResponce = doc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString();
-
-            return contentResponce;
         }
         #endregion
     }
