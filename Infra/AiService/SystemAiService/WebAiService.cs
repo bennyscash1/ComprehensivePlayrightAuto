@@ -14,9 +14,9 @@ namespace ComprehensivePlayrightAuto.Infra.AiService.SystemAiService
         public async Task<string> GetWebActionLocator(
             string webDomString, string userRequest)
         {
-            AiServiceAgent openAiService = new AiServiceAgent();
+            AiSystemService openAiService = new AiSystemService();
 
-            string responseLocatorFromAi = await openAiService.OpenAiServiceAgentRequest(
+            string responseLocatorFromAi = await openAiService.OpenAiServiceRequest(
                 $"Here is the full url: {webDomString}\n\n" +
                 $"I need to find the Xpath selector for the element that matches: '{userRequest}'\n\n" +
                 $"Please return only the XPATH selector without any other text",
