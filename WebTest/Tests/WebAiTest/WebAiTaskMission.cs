@@ -17,12 +17,14 @@ namespace ComprehensivePlayrightAuto.WebTest.Tests.WebAiTest
         [Test]
         public async Task _WebAiTaskMission()
         {
-            await GotoAsync("file:///C:/Bennys/AutoProjects/CSharpCompAuto/ComprehensivePlayrightAuto/clickDemo.html");
+            string url = "https://practicetestautomation.com/practice-test-login/";
+            string url2 = "file:///C:/Bennys/AutoProjects/CSharpCompAuto/ComprehensivePlayrightAuto/clickDemo.html";
+            await GotoAsync(url2);
             WebAiFlow webAiFlow = new WebAiFlow(pPage);
 
-    
-            await webAiFlow
-                .WebAiTaskMissionFlow("Enter name 'Benny shor' and next click on 'click here' button");
+            await webAiFlow.WebAiTaskMissionFlow("On the input field insertr 'Hello BENY', next click on 'Click here' button");
+
+            //await webAiFlow.WebAiTaskMissionFlow("On the user name inser 'Password123', on the password field insert 'Password123' and click submit button");
 
         }
     }

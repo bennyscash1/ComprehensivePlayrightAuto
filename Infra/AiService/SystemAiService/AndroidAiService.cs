@@ -115,7 +115,7 @@ namespace ComprehensivePlayrightAuto.Infra.AiService.SystemAiService
                 $"{userUpdateOnFailedScenario}",
                  AiSystemPrompts.SystemPromptTypeEnum.MobileSystemPromptMissionTask);
             
-            bool isLocatorValid = isAiReturnValidJson(responceLocatorFromAi);
+            bool isLocatorValid = AiCommonLogicService.IsAiReturnValidJson(responceLocatorFromAi);
             if (isLocatorValid)
             {
                 return responceLocatorFromAi;
@@ -127,20 +127,7 @@ namespace ComprehensivePlayrightAuto.Infra.AiService.SystemAiService
                 return string.Empty; 
             }
         }
-        public static bool isAiReturnValidJson(string input)
-        {
-            try
-            {
-                using (JsonDocument.Parse(input))
-                {
-                    return true;
-                }
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
-        }
+
         #endregion
 
     }

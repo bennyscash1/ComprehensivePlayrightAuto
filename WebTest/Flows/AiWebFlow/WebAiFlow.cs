@@ -45,7 +45,7 @@ namespace ComprehensivePlayrightAuto.WebTest.Flows.AiWebFlow
                 .GetXpathFromDomAccordingToUserTaks(userTaskMission);
 
             //here will be the input or click according to the return json type
-            return 0;
+            return jsonResponceAi;
         }
 
     }

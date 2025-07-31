@@ -1,7 +1,11 @@
 ﻿using ComprehensiveAutomation.Test.PageObject;
 using ComprehensiveAutomation.Test.UiTest.MobileTest.MobileFlows;
+using ComprehensivePlayrightAuto.Infra.AiService;
 using ComprehensivePlayrightAuto.Infra.AiService.AiAgent;
+using ComprehensivePlayrightAuto.Infra.AiService.AiAssitenceService;
+using ComprehensivePlayrightAuto.Infra.AiService.SystemAiService;
 using Microsoft.Playwright;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,22 +26,23 @@ namespace ComprehensivePlayrightAuto.WebTest.PageObject.WebAiPages
         }
         public async Task<int> GetXpathFromDomAccordingToUserTaks(string userRequest)
         {
+
             string fullPageDom = await pDriver
                 .EvaluateAsync<string>("() => document.documentElement.outerHTML");
-            int typResponceTypeNumber =-1;
-       
+            int typResponceTypeNumber = -1;
             while (typResponceTypeNumber!= (int)aiResponceTypeEnumWeb.MissionComplete )
             {
-                AiServiceAgent aiServiceAgent = new AiServiceAgent();
-                string userFullRequest = $"This is the user request task:\n: " +
-                    $"'{userRequest}'\n" +
+                OpenAiAssistantService aiAssitenceService = new OpenAiAssistantService();
+                string userFullRequest = $"This is the UserGoal task request: \n " +
+                    $"'{userRequest}'\n\n" +
                     $"The full dom html is {fullPageDom}\n\n" +
                     $"PLESE RETURN ONLY TYPE JSON SAME AS SYSTEM PROMPT!";
 
-                string aiResponceJson = await aiServiceAgent.OpenAiServiceAgentRequest(userFullRequest, SystemPromptTypeEnum
-                    .WebSystemTaskPrompt);
-                typResponceTypeNumber = ExtractSelectorFromJson(aiResponceJson).selectorType;
-                string xpathLocator = ExtractSelectorFromJson(aiResponceJson).selector;
+                string aiResponceJson = await aiAssitenceService
+                    .SendMessageToAssistant(userFullRequest);
+                string xpathLocator = "";
+                string inputValue = "";
+                (typResponceTypeNumber, xpathLocator, inputValue) = ExtractSelectorFromJson(aiResponceJson); 
 
                 if (typResponceTypeNumber != (int)aiResponceTypeEnumWeb.MissionComplete ||
                      typResponceTypeNumber != (int)aiResponceTypeEnumWeb.AiStuckOrUnsure)
@@ -51,8 +56,7 @@ namespace ComprehensivePlayrightAuto.WebTest.PageObject.WebAiPages
                     }
                     if (typResponceTypeNumber == (int)aiResponceTypeEnumWeb.InputLocator)
                     {
-                        string inputText = ExtractSelectorFromJson(aiResponceJson).userInputValue;
-                        await webAiActionPages.AiLocatorInputAction(xpathLocator, inputText);
+                        await webAiActionPages.AiLocatorInputAction(xpathLocator, inputValue);
 
                     }
                     if (typResponceTypeNumber == (int)aiResponceTypeEnumWeb.AiStuckOrUnsure)
@@ -77,33 +81,44 @@ namespace ComprehensivePlayrightAuto.WebTest.PageObject.WebAiPages
         #region get data from json
         public (int selectorType, string selector, string userInputValue) ExtractSelectorFromJson(string json)
         {
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-
+            string cleanJson = AiCommonLogicService.CleanJsonMarkdown(json);
+            bool isValidJson = AiCommonLogicService.IsAiReturnValidJson(json);
             string selector = null;
             string value = null;
             int type = -1;
 
-            if (root.TryGetProperty("selector", out JsonElement selectorElement))
+            if (isValidJson)
             {
-                selector = selectorElement.GetString();
-            }
+                using var doc = JsonDocument.Parse(cleanJson);
+                var root = doc.RootElement;
 
-            if (root.TryGetProperty("value", out JsonElement valueElement))
-            {
-                value = valueElement.GetString();
-            }
 
-            if (root.TryGetProperty("type", out JsonElement typeElement))
-            {
-                // בטוח יותר להשתמש בזה כדי להמיר ל-int
-                if (typeElement.TryGetInt32(out int parsedType))
+                if (root.TryGetProperty("xpath", out JsonElement selectorElement))
                 {
-                    type = parsedType;
+                    selector = selectorElement.GetString();
                 }
+
+                if (root.TryGetProperty("value", out JsonElement valueElement))
+                {
+                    value = valueElement.GetString();
+                }
+
+                if (root.TryGetProperty("type", out JsonElement typeElement))
+                {
+                    // בטוח יותר להשתמש בזה כדי להמיר ל-int
+                    if (typeElement.TryGetInt32(out int parsedType))
+                    {
+                        type = parsedType;
+                    }
+                }
+                return (type, selector, value);
             }
 
-            return (type, selector, value);
+            else
+            {
+                Assert.That(isValidJson, "AI return invalid json");
+                return (type, selector, value);
+            }
         }
 
         #endregion
